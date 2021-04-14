@@ -24,18 +24,18 @@ Parameters:
 
   DesiredCapacity:
     Type: Number
-    Default: '1'
+    Default: '8'
     Description: Number of instances to launch in your ECS cluster.
 
   MaxSize:
     Type: Number
-    Default: '1'
+    Default: '8'
     Description: Maximum number of instances that can be launched in your ECS cluster.
 
   InstanceType:
     Description: EC2 instance type
     Type: String
-    Default: t2.large
+    Default: t2.micro
     AllowedValues:
       - t2.micro
       - t2.small
