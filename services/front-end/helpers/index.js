@@ -13,6 +13,7 @@
    * */
 
   helpers.errorHandler = function(err, req, res, next) {
+    console.log(err);
     var ret = {
       message: err.message,
       error:   err

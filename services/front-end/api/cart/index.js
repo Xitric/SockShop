@@ -15,6 +15,7 @@
     console.log("Customer ID: " + custId);
     request(endpoints.cartsUrl + "/" + custId + "/items", function (error, response, body) {
       if (error) {
+        console.log("Error calling cart: " + error);
         return next(error);
       }
       helpers.respondStatusBody(res, response.statusCode, body)

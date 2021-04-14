@@ -34,6 +34,12 @@ app.use(helpers.sessionMiddleware);
 app.use(morgan("dev", {}));
 
 var domain = "";
+
+if (process.env.DOMAIN) {
+    domain = process.env.DOMAIN;
+    console.log("Environment variable setting domain to:", domain);
+}
+
 process.argv.forEach(function (val, index, array) {
   var arg = val.split("=");
   if (arg.length > 1) {

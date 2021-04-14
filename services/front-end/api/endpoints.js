@@ -4,12 +4,18 @@
   var util = require('util');
 
   var domain = "";
+
+  if (process.env.DOMAIN) {
+      domain = "." + process.env.DOMAIN;
+      console.log("Environment variable setting domain to:", domain);
+  }
+
   process.argv.forEach(function (val, index, array) {
     var arg = val.split("=");
     if (arg.length > 1) {
       if (arg[0] == "--domain") {
         domain = "." + arg[1];
-        console.log("Setting domain to:", domain);
+        console.log("System parameter setting domain to:", domain);
       }
     }
   });
