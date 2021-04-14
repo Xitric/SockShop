@@ -192,6 +192,8 @@ Resources:
         # Only allow inbound access to ECS from the load balancer
         - SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
           IpProtocol: -1
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: -1
       Tags:
         - Key: Name
           Value: !Sub ${AWS::StackName}-ECS-Hosts
@@ -218,7 +220,7 @@ Resources:
         - Key: Name
           Value: !Sub ${AWS::StackName}-LoadBalancers
 
-  EcsSecurityGroupHTTPinbound:
+  LoadBalancerSecurityGroupHTTPinbound:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       GroupId: !Ref LoadBalancerSecurityGroup
@@ -450,6 +452,7 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-carts-db
+      NetworkMode: awsvpc
       ContainerDefinitions:
       - Essential: 'true'
         Image: mongo
@@ -461,7 +464,23 @@ Resources:
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: carts-db
         Memory: '128'
+        PortMappings:
+        - ContainerPort: 27017
       Volumes: []
+  CartsDBDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig: 
+        FailureThreshold: 1
+      Name: carts-db
+      NamespaceId: !Ref SockShopNamespace
   CartsDBService:
     Type: AWS::ECS::Service
     DependsOn: LoadBalancerListener
@@ -469,6 +488,17 @@ Resources:
       Cluster: !Ref 'ECSCluster'
       DesiredCount: '1'
       TaskDefinition: !Ref 'CartsDBTask'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !Ref EcsSecurityGroup
+          Subnets:
+            - !Ref PublicSubnet1
+            - !Ref PublicSubnet2
+      ServiceName: carts-db
+      ServiceRegistries:
+      - RegistryArn: !GetAtt CartsDBDiscoveryService.Arn
+        Port: 27017
   
   CartsTask:
     Type: AWS::ECS::TaskDefinition
@@ -485,7 +515,11 @@ Resources:
             awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: carts
-        Memory: '1024'
+        Memory: '768'
+        Command:
+        - "--db=carts-db.sockshop.com"
+        PortMappings:
+        - ContainerPort: 80
       Volumes: []
   CartsDiscoveryService:
     Type: AWS::ServiceDiscovery::Service
@@ -549,6 +583,8 @@ Resources:
         Environment:
         - Name: ZIPKIN
           Value: http://zipkin:9411/api/v1/spans
+        PortMappings:
+        - ContainerPort: 80
       Volumes: []
   CatalogueDiscoveryService:
     Type: AWS::ServiceDiscovery::Service
@@ -676,6 +712,7 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-user
+      NetworkMode: awsvpc
       ContainerDefinitions:
       - Essential: 'true'
         Image: weaveworksdemos/user:0.4.4
@@ -688,20 +725,50 @@ Resources:
             awslogs-stream-prefix: user
         Memory: '128'
         Environment:
+        - Name: MONGO_HOST
+          Value: 'user-db.sockshop.com:27017'
         - Name: ZIPKIN
           Value: http://zipkin:9411/api/v1/spans
+        PortMappings:
+        - ContainerPort: 80
       Volumes: []
+  UserDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig: 
+        FailureThreshold: 1
+      Name: user
+      NamespaceId: !Ref SockShopNamespace
   UserService:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref 'ECSCluster'
       DesiredCount: '1'
       TaskDefinition: !Ref 'UserTask'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !Ref EcsSecurityGroup
+          Subnets:
+            - !Ref PublicSubnet1
+            - !Ref PublicSubnet2
+      ServiceName: user
+      ServiceRegistries:
+      - RegistryArn: !GetAtt UserDiscoveryService.Arn
+        Port: 80
   
   UserDBTask:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-users-db
+      NetworkMode: awsvpc
       ContainerDefinitions:
       - Essential: 'true'
         Image: weaveworksdemos/user-db:0.4.0
@@ -713,18 +780,46 @@ Resources:
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: user-db
         Memory: '128'
+        PortMappings:
+        - ContainerPort: 27017
       Volumes: []
+  UserDBDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig: 
+        FailureThreshold: 1
+      Name: user-db
+      NamespaceId: !Ref SockShopNamespace
   UserDBService:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref 'ECSCluster'
       DesiredCount: '1'
       TaskDefinition: !Ref 'UserDBTask'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !Ref EcsSecurityGroup
+          Subnets:
+            - !Ref PublicSubnet1
+            - !Ref PublicSubnet2
+      ServiceName: user-db
+      ServiceRegistries:
+      - RegistryArn: !GetAtt UserDBDiscoveryService.Arn
+        Port: 27017
 
   OrdersDBTask:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-orders-db
+      NetworkMode: awsvpc
       ContainerDefinitions:
       - Essential: 'true'
         Image: mongo
@@ -736,7 +831,23 @@ Resources:
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: orders-db
         Memory: '128'
+        PortMappings:
+        - ContainerPort: 27017
       Volumes: []
+  OrdersDBDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig: 
+        FailureThreshold: 1
+      Name: orders-db
+      NamespaceId: !Ref SockShopNamespace
   OrdersDBService:
     Type: AWS::ECS::Service
     DependsOn: LoadBalancerListener
@@ -744,11 +855,23 @@ Resources:
       Cluster: !Ref 'ECSCluster'
       DesiredCount: '1'
       TaskDefinition: !Ref 'OrdersDBTask'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !Ref EcsSecurityGroup
+          Subnets:
+            - !Ref PublicSubnet1
+            - !Ref PublicSubnet2
+      ServiceName: orders-db
+      ServiceRegistries:
+      - RegistryArn: !GetAtt OrdersDBDiscoveryService.Arn
+        Port: 27017
 
   OrdersTask:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-orders
+      NetworkMode: awsvpc
       ContainerDefinitions:
       - Essential: 'true'
         Image: weaveworksdemos/orders:0.4.7
@@ -759,19 +882,49 @@ Resources:
             awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: orders
-        Memory: '1024'
+        Memory: '768'
+        Command:
+        - "--db=orders-db.sockshop.com"
+        PortMappings:
+        - ContainerPort: 80
       Volumes: []
+  OrdersDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig: 
+        FailureThreshold: 1
+      Name: orders
+      NamespaceId: !Ref SockShopNamespace
   OrdersService:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref 'ECSCluster'
       DesiredCount: '1'
       TaskDefinition: !Ref 'OrdersTask'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !Ref EcsSecurityGroup
+          Subnets:
+            - !Ref PublicSubnet1
+            - !Ref PublicSubnet2
+      ServiceName: orders
+      ServiceRegistries:
+      - RegistryArn: !GetAtt OrdersDiscoveryService.Arn
+        Port: 80
   
   PaymentTask:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-payment
+      NetworkMode: awsvpc
       ContainerDefinitions:
       - Essential: 'true'
         Image: weaveworksdemos/payment:0.4.3
@@ -786,18 +939,46 @@ Resources:
         Environment:
         - Name: ZIPKIN
           Value: http://zipkin:9411/api/v1/spans
+        PortMappings:
+        - ContainerPort: 8080
       Volumes: []
+  PaymentDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig: 
+        FailureThreshold: 1
+      Name: payment
+      NamespaceId: !Ref SockShopNamespace
   PaymentService:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref 'ECSCluster'
       DesiredCount: '1'
       TaskDefinition: !Ref 'PaymentTask'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !Ref EcsSecurityGroup
+          Subnets:
+            - !Ref PublicSubnet1
+            - !Ref PublicSubnet2
+      ServiceName: payment
+      ServiceRegistries:
+      - RegistryArn: !GetAtt PaymentDiscoveryService.Arn
+        Port: 8080
   
   ShippingTask:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-shipping
+      NetworkMode: awsvpc
       ContainerDefinitions:
       - Essential: 'true'
         Image: weaveworksdemos/shipping:0.4.8
@@ -808,14 +989,41 @@ Resources:
             awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: shipping
-        Memory: '1024'
+        Memory: '768'
+        PortMappings:
+        - ContainerPort: 80
       Volumes: []
+  ShippingDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig: 
+        FailureThreshold: 1
+      Name: shipping
+      NamespaceId: !Ref SockShopNamespace
   ShippingService:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref 'ECSCluster'
       DesiredCount: '1'
       TaskDefinition: !Ref 'ShippingTask'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !Ref EcsSecurityGroup
+          Subnets:
+            - !Ref PublicSubnet1
+            - !Ref PublicSubnet2
+      ServiceName: shipping
+      ServiceRegistries:
+      - RegistryArn: !GetAtt ShippingDiscoveryService.Arn
+        Port: 80
 
   QueueMasterTask:
     Type: AWS::ECS::TaskDefinition
