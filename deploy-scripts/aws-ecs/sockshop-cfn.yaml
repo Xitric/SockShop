@@ -1,0 +1,971 @@
+# Heavily adapted from: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-ecs.html
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  TODO: Multi-line description supported
+Parameters:
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the ECS instances.
+
+  VpcCIDR:
+    Description: Please enter the IP range (CIDR notation) for this VPC
+    Type: String
+    Default: 10.192.0.0/16
+
+  PublicSubnet1CIDR:
+    Description: Please enter the IP range (CIDR notation) for the first public subnet
+    Type: String
+    Default: 10.192.10.0/24
+
+  PublicSubnet2CIDR:
+    Description: Please enter the IP range (CIDR notation) for the second public subnet
+    Type: String
+    Default: 10.192.20.0/24
+
+  DesiredCapacity:
+    Type: Number
+    Default: '1'
+    Description: Number of instances to launch in your ECS cluster.
+
+  MaxSize:
+    Type: Number
+    Default: '1'
+    Description: Maximum number of instances that can be launched in your ECS cluster.
+
+  InstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: t2.large
+    AllowedValues:
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+      - m4.xlarge
+      - m4.2xlarge
+      - m4.4xlarge
+      - m4.10xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - c3.large
+      - c3.xlarge
+      - c3.2xlarge
+      - c3.4xlarge
+      - c3.8xlarge
+      - r3.large
+      - r3.xlarge
+      - r3.2xlarge
+      - r3.4xlarge
+      - r3.8xlarge
+      - i2.xlarge
+      - i2.2xlarge
+      - i2.4xlarge
+      - i2.8xlarge
+    ConstraintDescription: Please choose a valid instance type.
+
+Mappings:
+  AWSRegionToAMI:
+    us-east-1:
+      AMIID: ami-005425225a11a4777
+
+  SqlImporterAmiIds:
+    us-east-1:
+      ImageId: ami-0b33d91d
+    us-east-2:
+      ImageId: ami-c55673a0
+    us-west-1:
+      ImageId: ami-f173cc91
+    us-west-2:
+      ImageId: ami-165a0876
+    eu-west-1:
+      ImageId: ami-70edb016
+    eu-central-1:
+      ImageId: ami-af0fc0c0
+    ap-northeast-1:
+      ImageId: ami-56d4ad31
+    ap-southeast-1:
+      ImageId: ami-dc9339bf
+    ap-southeast-2:
+      ImageId: ami-1c47407f
+
+Resources:
+  # VPC network
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCIDR
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Ref 'AWS::StackName'
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Ref 'AWS::StackName'
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      # AvailabilityZone: !Select [0, !GetAZs '']
+      AvailabilityZone: !Select
+        - 0
+        - Fn::GetAZs: !Ref 'AWS::Region'
+      CidrBlock: !Ref PublicSubnet1CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName} Public Subnet 1
+
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      # AvailabilityZone: !Select [0, !GetAZs '']
+      AvailabilityZone: !Select
+        - 1
+        - Fn::GetAZs: !Ref 'AWS::Region'
+      CidrBlock: !Ref PublicSubnet2CIDR
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName} Public Subnet 2
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName} Public Routes
+
+  DefaultPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet1
+
+  PublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      SubnetId: !Ref PublicSubnet2
+
+  # Cluster with EC2 instance
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub ${AWS::StackName}-Cluster
+  
+  EcsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Access to the ECS hosts and the tasks/containers that run on them
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        # Only allow inbound access to ECS from the load balancer
+        - SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
+          IpProtocol: -1
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-ECS-Hosts
+  
+  EcsSecurityGroupHTTPinbound:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref EcsSecurityGroup
+      IpProtocol: tcp
+      FromPort: '80'
+      ToPort: '80'
+      CidrIp: 0.0.0.0/0
+
+  LoadBalancerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref VPC
+      GroupDescription: Access to the load balancer that sits in front of ECS
+      SecurityGroupIngress:
+        # Allow access from anywhere to our load balancers
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: -1
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName}-LoadBalancers
+
+  EcsSecurityGroupHTTPinbound:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !Ref LoadBalancerSecurityGroup
+      IpProtocol: tcp
+      FromPort: '80'
+      ToPort: '80'
+      CidrIp: 0.0.0.0/0
+
+  ECSAutoScalingGroup:
+    DependsOn: ECSCluster
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      VPCZoneIdentifier:
+        - !Join
+          - ','
+          - - !Ref PublicSubnet1
+            - !Ref PublicSubnet2
+      LaunchConfigurationName: !Ref ECSLaunchConfiguration
+      MinSize: '1'
+      MaxSize: !Ref MaxSize
+      DesiredCapacity: !Ref DesiredCapacity
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName} ECS Instance
+          PropagateAtLaunch: true
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT15M
+    UpdatePolicy:
+      AutoScalingReplacingUpdate:
+        WillReplace: 'true'
+
+  ECSLaunchConfiguration:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId: !FindInMap
+        - AWSRegionToAMI
+        - !Ref 'AWS::Region'
+        - AMIID
+      InstanceType: !Ref InstanceType
+      SecurityGroups:
+        - !Ref EcsSecurityGroup
+      IamInstanceProfile: !Ref ECSInstanceProfile
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          yum install -y aws-cfn-bootstrap
+          /opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration
+          /opt/aws/bin/cfn-signal -e $? --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSAutoScalingGroup
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          commands:
+            01_add_instance_to_cluster:
+              command: !Sub echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
+          files:
+            /etc/cfn/cfn-hup.conf:
+              mode: 000400
+              owner: root
+              group: root
+              content: !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+            /etc/cfn/hooks.d/cfn-auto-reloader.conf:
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.ECSLaunchConfiguration.Metadata.AWS::CloudFormation::Init
+                action=/opt/aws/bin/cfn-init -v --region ${AWS::Region} --stack ${AWS::StackName} --resource ECSLaunchConfiguration
+          services:
+            sysvinit:
+              cfn-hup:
+                enabled: true
+                ensureRunning: true
+                files:
+                  - /etc/cfn/cfn-hup.conf
+                  - /etc/cfn/hooks.d/cfn-auto-reloader.conf
+
+  ECSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      RoleName: !Sub ${AWS::StackName}-ECSRole-${AWS::Region}
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: ['sts:AssumeRole']
+          Effect: Allow
+          Principal:
+            Service: [ec2.amazonaws.com]
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+      Policies:
+      - PolicyName: ecs-service
+        PolicyDocument: 
+          Statement:
+          - Effect: Allow
+            Action: [
+              'ecs:CreateCluster',
+              'ecs:DeregisterContainerInstance',
+              'ecs:DiscoverPollEndpoint',
+              'ecs:Poll',
+              'ecs:RegisterContainerInstance',
+              'ecs:StartTelemetrySession',
+              'ecs:Submit*',
+              'ecr:BatchCheckLayerAvailability',
+              'ecr:BatchGetImage',
+              'ecr:GetDownloadUrlForLayer',
+              'ecr:GetAuthorizationToken'
+            ]
+            Resource: '*'
+  
+  ECSInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref ECSRole
+  
+  FrontEndServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ecs-service-${AWS::StackName}
+      Path: /
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: ['ecs.amazonaws.com']
+          Action: ['sts:AssumeRole']
+      Policies:
+      - PolicyName: !Sub ecs-service-${AWS::StackName}
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action: [
+              'ec2:AuthorizeSecurityGroupIngress',
+              'ec2:Describe*',
+              'elasticloadbalancing:DeregisterInstancesFromLoadBalancer',
+              'elasticloadbalancing:Describe*',
+              'elasticloadbalancing:RegisterInstancesWithLoadBalancer',
+              'elasticloadbalancing:DeregisterTargets',
+              'elasticloadbalancing:DescribeTargetGroups',
+              'elasticloadbalancing:DescribeTargetHealth',
+              'elasticloadbalancing:RegisterTargets'
+            ]
+            Resource: '*'
+
+  # Load balancers
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Ref 'AWS::StackName'
+      Subnets:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+      SecurityGroups:
+        - !Ref LoadBalancerSecurityGroup
+      Tags:
+        - Key: Name
+          Value: !Ref 'AWS::StackName'
+
+  LoadBalancerListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Port: '80'
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref DefaultTargetGroup
+
+  # Unused, but required
+  DefaultTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub ${AWS::StackName}-default
+      VpcId: !Ref VPC
+      Port: '80'
+      Protocol: HTTP
+
+  FrontEndTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub ${AWS::StackName}-frontend
+      VpcId: !Ref VPC
+      Port: '80'
+      Protocol: HTTP
+      Matcher:
+        HttpCode: 200-299
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+
+  FrontEndListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      ListenerArn: !Ref LoadBalancerListener
+      Priority: 1
+      Conditions:
+        - Field: path-pattern
+          Values:
+            - '*'
+      Actions:
+        - TargetGroupArn: !Ref FrontEndTargetGroup
+          Type: forward
+  
+  # Service discovery
+  SockShopNamespace:
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+    Properties:
+        Name: sockshop.com
+        Vpc: !Ref VPC
+
+  # Monitoring
+  CloudwatchLogsGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub ECSLogGroup-${AWS::StackName}
+      RetentionInDays: 7
+
+  # SockShop application
+  CartsDBTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-carts-db
+      ContainerDefinitions:
+      - Essential: 'true'
+        Image: mongo
+        Name: carts-db
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: carts-db
+        Memory: '128'
+      Volumes: []
+  CartsDBService:
+    Type: AWS::ECS::Service
+    DependsOn: LoadBalancerListener
+    Properties:
+      Cluster: !Ref 'ECSCluster'
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'CartsDBTask'
+  
+  CartsTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-carts
+      NetworkMode: awsvpc
+      ContainerDefinitions:
+      - Essential: 'true'
+        Image: weaveworksdemos/carts:0.4.8
+        Name: carts
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: carts
+        Memory: '1024'
+      Volumes: []
+  CartsDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig: 
+        FailureThreshold: 1
+      Name: carts
+      NamespaceId: !Ref SockShopNamespace
+  CartsService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref 'ECSCluster'
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'CartsTask'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !Ref EcsSecurityGroup
+          Subnets:
+            - !Ref PublicSubnet1
+            - !Ref PublicSubnet2
+      ServiceName: carts
+      ServiceRegistries:
+      - RegistryArn: !GetAtt CartsDiscoveryService.Arn
+        Port: 80
+  
+  CatalogueTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-catalogue
+      NetworkMode: awsvpc
+      ContainerDefinitions:
+      - Essential: 'true'
+        Image: weaveworksdemos/catalogue:0.3.5
+        Name: catalogue
+        Memory: '128'
+        Command:
+        - "/app"
+        - "-port=80"
+        - Fn::Join:
+          - ''
+          - - "-DSN="
+            - catalogue_user:default_password@tcp(
+            - !GetAtt CatalogueRDS.Endpoint.Address
+            - ":"
+            - !GetAtt CatalogueRDS.Endpoint.Port
+            - ")/socksdb"
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: catalogue
+        Environment:
+        - Name: ZIPKIN
+          Value: http://zipkin:9411/api/v1/spans
+      Volumes: []
+  CatalogueDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig: 
+        FailureThreshold: 1
+      Name: catalogue
+      NamespaceId: !Ref SockShopNamespace
+  CatalogueService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref 'ECSCluster'
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'CatalogueTask'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !Ref EcsSecurityGroup
+          Subnets:
+            - !Ref PublicSubnet1
+            - !Ref PublicSubnet2
+      ServiceName: catalogue
+      ServiceRegistries:
+      - RegistryArn: !GetAtt CatalogueDiscoveryService.Arn
+        Port: 80
+    DependsOn: SQLImporter
+  
+  FrontEndTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-frontend
+      ContainerDefinitions:
+      - Essential: 'true'
+        Image: xitric/front-end:otel1.0.3
+        Name: front-end
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: frontend
+        Memory: '256'
+        Environment:
+        - Name: SESSION_REDIS
+          Value: 'true'
+        - Name: SERVICE_NAME
+          Value: frontend
+        - Name: DOMAIN
+          Value: sockshop.com
+        PortMappings:
+        - ContainerPort: 8079
+      Volumes: []
+  FrontEndService:
+    Type: AWS::ECS::Service
+    DependsOn: FrontEndListenerRule
+    Properties:
+      Cluster: !Ref 'ECSCluster'
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'FrontEndTask'
+      Role: !Ref FrontEndServiceRole
+      LoadBalancers:
+        - ContainerName: 'front-end'
+          ContainerPort: 8079
+          TargetGroupArn: !Ref FrontEndTargetGroup
+  
+  SessionDBTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-session-db
+      NetworkMode: awsvpc
+      ContainerDefinitions:
+      - Essential: 'true'
+        Image: redis:alpine
+        Name: session-db
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: session-db
+        Memory: '256'
+        PortMappings:
+        - ContainerPort: 6379
+      Volumes: []
+  SessionDBDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig: 
+        FailureThreshold: 1
+      Name: session-db
+      NamespaceId: !Ref SockShopNamespace
+  SessionDBService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref 'ECSCluster'
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'SessionDBTask'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !Ref EcsSecurityGroup
+          Subnets:
+            - !Ref PublicSubnet1
+            - !Ref PublicSubnet2
+      ServiceName: session-db
+      ServiceRegistries:
+      - RegistryArn: !GetAtt SessionDBDiscoveryService.Arn
+        Port: 6379
+  
+  UserTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-user
+      ContainerDefinitions:
+      - Essential: 'true'
+        Image: weaveworksdemos/user:0.4.4
+        Name: user
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: user
+        Memory: '128'
+        Environment:
+        - Name: ZIPKIN
+          Value: http://zipkin:9411/api/v1/spans
+      Volumes: []
+  UserService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref 'ECSCluster'
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'UserTask'
+  
+  UserDBTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-users-db
+      ContainerDefinitions:
+      - Essential: 'true'
+        Image: weaveworksdemos/user-db:0.4.0
+        Name: user-db
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: user-db
+        Memory: '128'
+      Volumes: []
+  UserDBService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref 'ECSCluster'
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'UserDBTask'
+
+  OrdersDBTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-orders-db
+      ContainerDefinitions:
+      - Essential: 'true'
+        Image: mongo
+        Name: orders-db
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: orders-db
+        Memory: '128'
+      Volumes: []
+  OrdersDBService:
+    Type: AWS::ECS::Service
+    DependsOn: LoadBalancerListener
+    Properties:
+      Cluster: !Ref 'ECSCluster'
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'OrdersDBTask'
+
+  OrdersTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-orders
+      ContainerDefinitions:
+      - Essential: 'true'
+        Image: weaveworksdemos/orders:0.4.7
+        Name: orders
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: orders
+        Memory: '1024'
+      Volumes: []
+  OrdersService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref 'ECSCluster'
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'OrdersTask'
+  
+  PaymentTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-payment
+      ContainerDefinitions:
+      - Essential: 'true'
+        Image: weaveworksdemos/payment:0.4.3
+        Name: payment
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: payment
+        Memory: '128'
+        Environment:
+        - Name: ZIPKIN
+          Value: http://zipkin:9411/api/v1/spans
+      Volumes: []
+  PaymentService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref 'ECSCluster'
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'PaymentTask'
+  
+  ShippingTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-shipping
+      ContainerDefinitions:
+      - Essential: 'true'
+        Image: weaveworksdemos/shipping:0.4.8
+        Name: shipping
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: shipping
+        Memory: '1024'
+      Volumes: []
+  ShippingService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref 'ECSCluster'
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'ShippingTask'
+
+  QueueMasterTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-queue-master
+      ContainerDefinitions:
+      - Essential: 'true'
+        Image: weaveworksdemos/queue-master:0.3.1
+        Name: queue-master
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: queue-master
+        Memory: '768'
+        MountPoints:
+        - ContainerPath: "/var/run/docker.sock"
+          SourceVolume: VarRunDocker_Sock
+      Volumes:
+      - Host:
+          SourcePath: "/var/run/docker.sock"
+        Name: VarRunDocker_Sock
+  QueueMasterService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref 'ECSCluster'
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'QueueMasterTask'
+  
+  RabbitMQTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-rabbitmq
+      ContainerDefinitions:
+      - Essential: 'true'
+        Image: rabbitmq:3.6.8
+        Name: rabbitmq
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: rabbitmq
+        Memory: '128'
+      Volumes: []
+  RabbitMQService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref 'ECSCluster'
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'RabbitMQTask'
+
+  # SockShop databases
+  CatalogueRDS:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: '100'
+      DBInstanceClass: db.t2.micro
+      DBName: socksdb
+      Engine: MySQL
+      MasterUsername: catalogue_user
+      MasterUserPassword: default_password
+      VPCSecurityGroups:
+        - !Ref DBEC2SecurityGroup
+      DBSubnetGroupName: !Ref myDBSubnetGroup
+  SQLImporter:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap
+        - SqlImporterAmiIds
+        - !Ref 'AWS::Region'
+        - ImageId
+      InstanceType: t2.micro
+      NetworkInterfaces:
+      - AssociatePublicIpAddress: 'true'
+        DeviceIndex: '0'
+        GroupSet:
+          - !Ref EcsSecurityGroup
+        SubnetId: !Ref PublicSubnet1
+      Tags:
+      - Key: Name
+        Value: !Sub RDS Importer - ${AWS::StackName}
+      KeyName: !Ref KeyName
+      UserData:
+        Fn::Base64: !Join
+          - ''
+          - - "#!/bin/bash -xe\n"
+            - 'yum update -y aws-cfn-bootstrap
+
+              '
+            - "# Install the files and packages from the metadata\n"
+            - "/opt/aws/bin/cfn-init -v "
+            - "         --stack "
+            - !Ref 'AWS::StackName'
+            - "         --resource SQLImporter"
+            - "         --region "
+            - !Ref 'AWS::Region'
+            - "\n"
+            - "# Signal the status from cfn-init\n"
+            - "/opt/aws/bin/cfn-signal -e $? "
+            - "         --stack "
+            - !Ref 'AWS::StackName'
+            - "         --resource SQLImporter"
+            - "         --region "
+            - !Ref 'AWS::Region'
+            - "\n"
+    DependsOn: CatalogueRDS
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          packages:
+            yum:
+              mysql: []
+          commands:
+            get:
+              command: wget https://raw.githubusercontent.com/microservices-demo/catalogue/master/docker/catalogue-db/data/dump.sql
+            import:
+              command: 'mysql -u catalogue_user --password=default_password -h $SOCKS_DB
+                -f -D socksdb < dump.sql '
+              env:
+                SOCKS_DB: !GetAtt CatalogueRDS.Endpoint.Address
+  DBEC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Open database for access
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '3306'
+        ToPort: '3306'
+        SourceSecurityGroupId: !Ref EcsSecurityGroup
+      VpcId: !Ref VPC
+  
+  myDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: description
+      SubnetIds:
+      - !Ref PublicSubnet1
+      - !Ref PublicSubnet2
+
+Outputs:
+  ecscluster:
+    Value: !Ref 'ECSCluster'
+  ECSALB:
+    Description: Your load balancer DNS URL
+    Value: !GetAtt LoadBalancer.DNSName
+  AppFrontend:
+    Value: !Join
+      - ''
+      - - 'http://'
+        - !GetAtt LoadBalancer.DNSName
+        - ':80'
