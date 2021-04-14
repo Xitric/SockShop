@@ -1,0 +1,36 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+processors:
+  batch:
+
+exporters:
+  humio:
+    ingest_token: "082301c6-5c73-4815-aadc-56eecff082b1"
+    endpoint: "http://humio:8080/"
+    sending_queue:
+      enabled: true
+      num_consumers: 20
+      queue_size: 2500
+    retry_on_failure:
+      enabled: true
+      initial_interval: 8s
+      max_interval: 2m
+      max_elapsed_time: 5m
+
+extensions:
+  health_check:
+  pprof:
+  zpages:
+    endpoint: :55679
+
+service:
+  extensions: [health_check,pprof,zpages]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [humio]
