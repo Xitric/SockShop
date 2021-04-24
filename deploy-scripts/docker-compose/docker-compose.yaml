@@ -180,6 +180,7 @@ services:
     hostname: collector
     volumes:
       - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    env_file: secrets.env
     ports:
       - 4317:4317
       - 8888:8888
@@ -190,13 +191,6 @@ services:
       - 55679:55679
       - 55680:55680
       - 55681:55681
-  humio:
-    image: humio/humio:latest
-    hostname: humio
-    ports:
-      - 8081:8080
-    volumes:
-      - humio_data:/data
 
 volumes:
   humio_data:

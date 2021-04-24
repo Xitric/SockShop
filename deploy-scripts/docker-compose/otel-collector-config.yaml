@@ -3,14 +3,21 @@ receivers:
     protocols:
       grpc:
       http:
+  jaeger:
+    protocols:
+      grpc:
 
 processors:
   batch:
 
 exporters:
   humio:
-    ingest_token: "082301c6-5c73-4815-aadc-56eecff082b1"
-    endpoint: "http://humio:8080/"
+    endpoint: "https://cloud.humio.com/"
+    insecure_skip_verify: true
+    tag: service_name
+    traces:
+      ingest_token: "${HUMIO_INGEST_TOKEN}"
+      unix_timestamps: true
     sending_queue:
       enabled: true
       num_consumers: 20
@@ -31,6 +38,6 @@ service:
   extensions: [health_check,pprof,zpages]
   pipelines:
     traces:
-      receivers: [otlp]
+      receivers: [otlp,jaeger]
       processors: [batch]
       exporters: [humio]
