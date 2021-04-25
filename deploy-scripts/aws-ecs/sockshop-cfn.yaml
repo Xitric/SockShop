@@ -402,20 +402,6 @@ Resources:
           - Effect: Allow
             Action: ['ssm:GetParameters']
             Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/ecs/sockshop/humio_ingest_token/traces
-      # - PolicyName: !Sub ${AWS::StackName}-TaskRole-CloudWatch-${AWS::Region}
-      #   PolicyDocument:
-      #     Version: '2012-10-17'
-      #     Statement:
-      #     - Effect: Allow
-      #       Action: [
-      #         'logs:CreateLogGroup',
-      #         'logs:CreateLogStream',
-      #         'logs:PutLogEvents',
-      #         'logs:DescribeLogStreams'
-      #       ]
-      #       Resource: [
-      #         'arn:aws:logs:*:*:*'
-      #       ]
 
   # Load balancers
   LoadBalancer:
