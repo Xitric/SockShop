@@ -22,14 +22,18 @@ Parameters:
     Type: String
     Default: 10.192.20.0/24
 
+  # t2.micro is limited to two network interfaces, meaning that for each
+  # instance we can have the instance network interface itself + 1 service. We
+  # have 12 services in total, 11 of which require their own network interface.
+  # Thus, we need 11 instances.
   DesiredCapacity:
     Type: Number
-    Default: '8'
+    Default: '11'
     Description: Number of instances to launch in your ECS cluster.
 
   MaxSize:
     Type: Number
-    Default: '8'
+    Default: '11'
     Description: Maximum number of instances that can be launched in your ECS cluster.
 
   InstanceType:
@@ -125,7 +129,6 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      # AvailabilityZone: !Select [0, !GetAZs '']
       AvailabilityZone: !Select
         - 0
         - Fn::GetAZs: !Ref 'AWS::Region'
@@ -139,7 +142,6 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      # AvailabilityZone: !Select [0, !GetAZs '']
       AvailabilityZone: !Select
         - 1
         - Fn::GetAZs: !Ref 'AWS::Region'
@@ -580,9 +582,9 @@ Resources:
             awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: catalogue
-        Environment:
-        - Name: ZIPKIN
-          Value: http://zipkin:9411/api/v1/spans
+        # Environment:
+        # - Name: ZIPKIN
+        #   Value: http://zipkin:9411/api/v1/spans
         PortMappings:
         - ContainerPort: 80
       Volumes: []
@@ -727,8 +729,8 @@ Resources:
         Environment:
         - Name: MONGO_HOST
           Value: 'user-db.sockshop.com:27017'
-        - Name: ZIPKIN
-          Value: http://zipkin:9411/api/v1/spans
+        # - Name: ZIPKIN
+        #   Value: http://zipkin:9411/api/v1/spans
         PortMappings:
         - ContainerPort: 80
       Volumes: []
@@ -936,9 +938,9 @@ Resources:
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: payment
         Memory: '128'
-        Environment:
-        - Name: ZIPKIN
-          Value: http://zipkin:9411/api/v1/spans
+        # Environment:
+        # - Name: ZIPKIN
+        #   Value: http://zipkin:9411/api/v1/spans
         PortMappings:
         - ContainerPort: 8080
       Volumes: []
@@ -1025,6 +1027,7 @@ Resources:
       - RegistryArn: !GetAtt ShippingDiscoveryService.Arn
         Port: 80
 
+  # Consumer only, do no need to set up service discovery
   QueueMasterTask:
     Type: AWS::ECS::TaskDefinition
     Properties:
@@ -1058,6 +1061,7 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-rabbitmq
+      NetworkMode: awsvpc
       ContainerDefinitions:
       - Essential: 'true'
         Image: rabbitmq:3.6.8
@@ -1069,13 +1073,40 @@ Resources:
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: rabbitmq
         Memory: '128'
+        PortMappings:
+        - ContainerPort: 5672
       Volumes: []
+  RabbitMQDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig: 
+        FailureThreshold: 1
+      Name: rabbitmq
+      NamespaceId: !Ref SockShopNamespace
   RabbitMQService:
     Type: AWS::ECS::Service
     Properties:
       Cluster: !Ref 'ECSCluster'
       DesiredCount: '1'
       TaskDefinition: !Ref 'RabbitMQTask'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !Ref EcsSecurityGroup
+          Subnets:
+            - !Ref PublicSubnet1
+            - !Ref PublicSubnet2
+      ServiceName: rabbitmq
+      ServiceRegistries:
+      - RegistryArn: !GetAtt RabbitMQDiscoveryService.Arn
+        Port: 5672
 
   # SockShop databases
   CatalogueRDS:
