@@ -179,7 +179,7 @@ services:
     image: xitric/collector-contrib:latest
     hostname: collector
     volumes:
-      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml
+      - ./otel-collector-config.yaml:/etc/config/otel-collector-config.yaml
     env_file: secrets.env
     ports:
       - 4317:4317

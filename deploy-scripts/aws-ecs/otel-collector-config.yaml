@@ -1,0 +1,39 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+processors:
+  memory_limiter:
+    # Assuming 200MiB memory
+    ballast_size_mib: 100
+    limit_mib: 160
+    spike_limit_mib: 40
+    check_interval: 5s
+  batch:
+
+exporters:
+  humio:
+    endpoint: "https://cloud.humio.com/"
+    insecure_skip_verify: true
+    tag: service_name
+    traces:
+      ingest_token: "${HUMIO_INGEST_TOKEN}"
+      unix_timestamps: true
+    sending_queue:
+      enabled: true
+      num_consumers: 20
+      queue_size: 2500
+    retry_on_failure:
+      enabled: true
+      initial_interval: 8s
+      max_interval: 2m
+      max_elapsed_time: 5m
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [humio]
