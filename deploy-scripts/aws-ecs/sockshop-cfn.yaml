@@ -682,7 +682,7 @@ Resources:
       Cpu: '1024'
       ContainerDefinitions:
       - Essential: 'true'
-        Image: xitric/carts:1.0.0
+        Image: xitric/carts:1.0.1
         Name: carts
         LogConfiguration:
           LogDriver: awslogs
@@ -698,7 +698,7 @@ Resources:
           - ContainerName: aws-collector
             Condition: START
       - Essential: 'true'
-        Image: 'amazon/aws-otel-collector:latest'
+        Image: 'xitric/aws-collector:1.0.0'
         Name: aws-collector
         Command:
           - '--config=/etc/config/aws-collector-config.yaml'
@@ -780,12 +780,15 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-catalogue
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
       NetworkMode: awsvpc
+      Memory: '328'
+      Cpu: '256'
       ContainerDefinitions:
       - Essential: 'true'
         Image: weaveworksdemos/catalogue:0.3.5
         Name: catalogue
-        Memory: '128'
         Command:
         - "/app"
         - "-port=80"
@@ -803,12 +806,61 @@ Resources:
             awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: catalogue
-        # Environment:
-        # - Name: ZIPKIN
-        #   Value: http://zipkin:9411/api/v1/spans
+        Environment:
+          - Name: ZIPKIN
+            Value: http://localhost:9411/api/v1/spans
         PortMappings:
-        - ContainerPort: 80
-      Volumes: []
+          - ContainerPort: 80
+        DependsOn:
+          - ContainerName: aws-collector
+            Condition: START
+      - Essential: 'true'
+        Image: 'xitric/aws-collector:1.0.0'
+        Name: aws-collector
+        Command:
+          - '--config=/etc/config/aws-collector-config.yaml'
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-create-group: 'true'
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: aws-collector
+        MountPoints:
+          - ContainerPath: /etc/config
+            SourceVolume: collector-config-volume
+            ReadOnly: true
+        PortMappings:
+          - HostPort: 2000
+            Protocol: udp
+            ContainerPort: 2000
+          - HostPort: 9411
+            Protocol: tcp
+            ContainerPort: 9411
+          - HostPort: 8125
+            Protocol: udp
+            ContainerPort: 8125
+      - Essential: 'false'
+        Name: aoc-statsd-emitter
+        Image: 'alpine/socat:latest'
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-create-group: 'true'
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: statsd
+        DependsOn:
+          - ContainerName: aws-collector
+            Condition: START
+        EntryPoint:
+          - "/bin/sh"
+          - "-c"
+          - "while true; do echo 'statsdTestMetric:1|c' | socat -v -t 0 - UDP:127.0.0.1:8125; sleep 1; done"
+      Volumes:
+        - Name: collector-config-volume
+          Host:
+            SourcePath: /etc/config
   CatalogueDiscoveryService:
     Type: AWS::ServiceDiscovery::Service
     Properties:
@@ -846,9 +898,13 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-frontend
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+      Memory: '456'
+      Cpu: '512'
       ContainerDefinitions:
       - Essential: 'true'
-        Image: xitric/front-end:otel1.0.3
+        Image: xitric/front-end:1.0.1
         Name: front-end
         LogConfiguration:
           LogDriver: awslogs
@@ -856,17 +912,67 @@ Resources:
             awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: frontend
-        Memory: '256'
         Environment:
-        - Name: SESSION_REDIS
-          Value: 'true'
-        - Name: SERVICE_NAME
-          Value: frontend
-        - Name: DOMAIN
-          Value: sockshop.com
+          - Name: SESSION_REDIS
+            Value: 'true'
+          - Name: SERVICE_NAME
+            Value: frontend
+          - Name: DOMAIN
+            Value: sockshop.com
         PortMappings:
-        - ContainerPort: 8079
-      Volumes: []
+          - ContainerPort: 8079
+        DependsOn:
+          - ContainerName: aws-collector
+            Condition: START
+        Links:
+            - aws-collector
+      - Essential: 'true'
+        Image: 'xitric/aws-collector:1.0.0'
+        Name: aws-collector
+        Command:
+          - '--config=/etc/config/aws-collector-config.yaml'
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-create-group: 'true'
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: aws-collector
+        MountPoints:
+          - ContainerPath: /etc/config
+            SourceVolume: collector-config-volume
+            ReadOnly: true
+        PortMappings:
+          - HostPort: 2000
+            Protocol: udp
+            ContainerPort: 2000
+          - HostPort: 55681
+            Protocol: tcp
+            ContainerPort: 55681
+          - HostPort: 8125
+            Protocol: udp
+            ContainerPort: 8125
+      - Essential: 'false'
+        Name: aoc-statsd-emitter
+        Image: 'alpine/socat:latest'
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-create-group: 'true'
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: statsd
+        DependsOn:
+          - ContainerName: aws-collector
+            Condition: START
+        EntryPoint:
+          - "/bin/sh"
+          - "-c"
+          - "while true; do echo 'statsdTestMetric:1|c' | socat -v -t 0 - UDP:127.0.0.1:8125; sleep 1; done"
+      Volumes:
+        - Name: collector-config-volume
+          Host:
+            SourcePath: /etc/config
   FrontEndService:
     Type: AWS::ECS::Service
     DependsOn: FrontEndListenerRule
@@ -935,7 +1041,11 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-user
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
       NetworkMode: awsvpc
+      Memory: '328'
+      Cpu: '256'
       ContainerDefinitions:
       - Essential: 'true'
         Image: weaveworksdemos/user:0.4.4
@@ -946,15 +1056,63 @@ Resources:
             awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: user
-        Memory: '128'
         Environment:
-        - Name: MONGO_HOST
-          Value: 'user-db.sockshop.com:27017'
-        # - Name: ZIPKIN
-        #   Value: http://zipkin:9411/api/v1/spans
+          - Name: MONGO_HOST
+            Value: 'user-db.sockshop.com:27017'
+          - Name: ZIPKIN
+            Value: http://localhost:9411/api/v1/spans
         PortMappings:
-        - ContainerPort: 80
-      Volumes: []
+          - ContainerPort: 80
+        DependsOn:
+          - ContainerName: aws-collector
+            Condition: START
+      - Essential: 'true'
+        Image: 'xitric/aws-collector:1.0.0'
+        Name: aws-collector
+        Command:
+          - '--config=/etc/config/aws-collector-config.yaml'
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-create-group: 'true'
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: aws-collector
+        MountPoints:
+          - ContainerPath: /etc/config
+            SourceVolume: collector-config-volume
+            ReadOnly: true
+        PortMappings:
+          - HostPort: 2000
+            Protocol: udp
+            ContainerPort: 2000
+          - HostPort: 9411
+            Protocol: tcp
+            ContainerPort: 9411
+          - HostPort: 8125
+            Protocol: udp
+            ContainerPort: 8125
+      - Essential: 'false'
+        Name: aoc-statsd-emitter
+        Image: 'alpine/socat:latest'
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-create-group: 'true'
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: statsd
+        DependsOn:
+          - ContainerName: aws-collector
+            Condition: START
+        EntryPoint:
+          - "/bin/sh"
+          - "-c"
+          - "while true; do echo 'statsdTestMetric:1|c' | socat -v -t 0 - UDP:127.0.0.1:8125; sleep 1; done"
+      Volumes:
+        - Name: collector-config-volume
+          Host:
+            SourcePath: /etc/config
   UserDiscoveryService:
     Type: AWS::ServiceDiscovery::Service
     Properties:
@@ -1094,10 +1252,14 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-orders
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
       NetworkMode: awsvpc
+      Memory: '968'
+      Cpu: '1024'
       ContainerDefinitions:
       - Essential: 'true'
-        Image: weaveworksdemos/orders:0.4.7
+        Image: xitric/orders:1.0.1
         Name: orders
         LogConfiguration:
           LogDriver: awslogs
@@ -1105,12 +1267,60 @@ Resources:
             awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: orders
-        Memory: '768'
         Command:
         - "--db=orders-db.sockshop.com"
         PortMappings:
         - ContainerPort: 80
-      Volumes: []
+        DependsOn:
+          - ContainerName: aws-collector
+            Condition: START
+      - Essential: 'true'
+        Image: 'xitric/aws-collector:1.0.0'
+        Name: aws-collector
+        Command:
+          - '--config=/etc/config/aws-collector-config.yaml'
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-create-group: 'true'
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: aws-collector
+        MountPoints:
+          - ContainerPath: /etc/config
+            SourceVolume: collector-config-volume
+            ReadOnly: true
+        PortMappings:
+          - HostPort: 2000
+            Protocol: udp
+            ContainerPort: 2000
+          - HostPort: 4317
+            Protocol: tcp
+            ContainerPort: 4317
+          - HostPort: 8125
+            Protocol: udp
+            ContainerPort: 8125
+      - Essential: 'false'
+        Name: aoc-statsd-emitter
+        Image: 'alpine/socat:latest'
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-create-group: 'true'
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: statsd
+        DependsOn:
+          - ContainerName: aws-collector
+            Condition: START
+        EntryPoint:
+          - "/bin/sh"
+          - "-c"
+          - "while true; do echo 'statsdTestMetric:1|c' | socat -v -t 0 - UDP:127.0.0.1:8125; sleep 1; done"
+      Volumes:
+        - Name: collector-config-volume
+          Host:
+            SourcePath: /etc/config
   OrdersDiscoveryService:
     Type: AWS::ServiceDiscovery::Service
     Properties:
@@ -1147,7 +1357,11 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-payment
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
       NetworkMode: awsvpc
+      Memory: '328'
+      Cpu: '256'
       ContainerDefinitions:
       - Essential: 'true'
         Image: weaveworksdemos/payment:0.4.3
@@ -1158,13 +1372,61 @@ Resources:
             awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: payment
-        Memory: '128'
-        # Environment:
-        # - Name: ZIPKIN
-        #   Value: http://zipkin:9411/api/v1/spans
+        Environment:
+        - Name: ZIPKIN
+          Value: http://localhost:9411/api/v1/spans
         PortMappings:
         - ContainerPort: 8080
-      Volumes: []
+        DependsOn:
+          - ContainerName: aws-collector
+            Condition: START
+      - Essential: 'true'
+        Image: 'xitric/aws-collector:1.0.0'
+        Name: aws-collector
+        Command:
+          - '--config=/etc/config/aws-collector-config.yaml'
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-create-group: 'true'
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: aws-collector
+        MountPoints:
+          - ContainerPath: /etc/config
+            SourceVolume: collector-config-volume
+            ReadOnly: true
+        PortMappings:
+          - HostPort: 2000
+            Protocol: udp
+            ContainerPort: 2000
+          - HostPort: 9411
+            Protocol: tcp
+            ContainerPort: 9411
+          - HostPort: 8125
+            Protocol: udp
+            ContainerPort: 8125
+      - Essential: 'false'
+        Name: aoc-statsd-emitter
+        Image: 'alpine/socat:latest'
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-create-group: 'true'
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: statsd
+        DependsOn:
+          - ContainerName: aws-collector
+            Condition: START
+        EntryPoint:
+          - "/bin/sh"
+          - "-c"
+          - "while true; do echo 'statsdTestMetric:1|c' | socat -v -t 0 - UDP:127.0.0.1:8125; sleep 1; done"
+      Volumes:
+        - Name: collector-config-volume
+          Host:
+            SourcePath: /etc/config
   PaymentDiscoveryService:
     Type: AWS::ServiceDiscovery::Service
     Properties:
@@ -1201,10 +1463,14 @@ Resources:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-shipping
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
       NetworkMode: awsvpc
+      Memory: '968'
+      Cpu: '1024'
       ContainerDefinitions:
       - Essential: 'true'
-        Image: weaveworksdemos/shipping:0.4.8
+        Image: xitric/shipping:1.0.1
         Name: shipping
         LogConfiguration:
           LogDriver: awslogs
@@ -1212,10 +1478,58 @@ Resources:
             awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: shipping
-        Memory: '768'
         PortMappings:
         - ContainerPort: 80
-      Volumes: []
+        DependsOn:
+          - ContainerName: aws-collector
+            Condition: START
+      - Essential: 'true'
+        Image: 'xitric/aws-collector:1.0.0'
+        Name: aws-collector
+        Command:
+          - '--config=/etc/config/aws-collector-config.yaml'
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-create-group: 'true'
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: aws-collector
+        MountPoints:
+          - ContainerPath: /etc/config
+            SourceVolume: collector-config-volume
+            ReadOnly: true
+        PortMappings:
+          - HostPort: 2000
+            Protocol: udp
+            ContainerPort: 2000
+          - HostPort: 4317
+            Protocol: tcp
+            ContainerPort: 4317
+          - HostPort: 8125
+            Protocol: udp
+            ContainerPort: 8125
+      - Essential: 'false'
+        Name: aoc-statsd-emitter
+        Image: 'alpine/socat:latest'
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-create-group: 'true'
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: statsd
+        DependsOn:
+          - ContainerName: aws-collector
+            Condition: START
+        EntryPoint:
+          - "/bin/sh"
+          - "-c"
+          - "while true; do echo 'statsdTestMetric:1|c' | socat -v -t 0 - UDP:127.0.0.1:8125; sleep 1; done"
+      Volumes:
+        - Name: collector-config-volume
+          Host:
+            SourcePath: /etc/config
   ShippingDiscoveryService:
     Type: AWS::ServiceDiscovery::Service
     Properties:

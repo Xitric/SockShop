@@ -16,7 +16,7 @@ provider.addSpanProcessor(
     new SimpleSpanProcessor(
       new CollectorTraceExporter({
         serviceName: process.env.SERVICE_NAME,
-        url: `http://collector:55681/v1/trace`,
+        url: `http://localhost:55681/v1/trace`,
       })
     )
   );
