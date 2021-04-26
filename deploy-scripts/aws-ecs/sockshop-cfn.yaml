@@ -1060,7 +1060,7 @@ Resources:
             Value: 'user-db.sockshop.com:27017'
           - Name: ZIPKIN
             Value: http://localhost:9411/api/v1/spans
-          - Name: HATEOAS
+          - Name: HATEAOS
             Value: user.sockshop.com
         PortMappings:
           - ContainerPort: 80
