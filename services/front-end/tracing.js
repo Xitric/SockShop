@@ -26,7 +26,7 @@ provider.register();
 registerInstrumentations({
   instrumentations: [
     new HttpInstrumentation(),
-    new ExpressInstrumentation(),
+    // new ExpressInstrumentation(),
   ],
   tracerProvider: provider,
 });
