@@ -213,8 +213,8 @@ service:
     metrics/application:
       receivers: [otlp,statsd]
       processors: [batch/metrics]
-      exporters: [awsemf/application]
+      exporters: [awsemf/application,otlp]
     metrics/performance:
       receivers: [awsecscontainermetrics]
       processors: [filter,metricstransform,resource]
-      exporters: [awsemf/performance]
+      exporters: [awsemf/performance,otlp]
