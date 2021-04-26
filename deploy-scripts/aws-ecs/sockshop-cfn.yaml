@@ -34,11 +34,12 @@ Parameters:
 
   # t2.micro is limited to two network interfaces, meaning that for each
   # instance we can have the instance network interface itself + 1 service. We
-  # have 12 services in total, 11 of which require their own network interface.
-  # Thus, we need 11 instances.
+  # have 13 services in total, 12 of which require their own network interface.
+  # Thus, we need 12 instances. To further enable rolling updates, we need an
+  # extra instance, thus requiring a total of 13.
   Capacity:
     Type: Number
-    Default: '12'
+    Default: '13'
     Description: Number of instances to launch in your ECS cluster.
 
   InstanceType:
@@ -376,10 +377,12 @@ Resources:
             01_add_instance_to_cluster:
               command: !Sub echo ECS_CLUSTER=${ECSCluster} >> /etc/ecs/ecs.config
           files:
-            # Load the collector configuration from S3 onto every EC2 instance,
+            # Load the collector configurations from S3 onto every EC2 instance,
             # such that sidecars can be configured correctly
-            /etc/config/otel-collector-config.yaml:
-              source: https://sockshop-ecs.s3.amazonaws.com/otel-collector-config.yaml
+            /etc/config/aws-collector-config.yaml:
+              source: https://sockshop-ecs.s3.amazonaws.com/aws-collector-config.yaml
+            /etc/config/humio-collector-config.yaml:
+              source: https://sockshop-ecs.s3.amazonaws.com/humio-collector-config.yaml
             /etc/cfn/cfn-hup.conf:
               mode: 000400
               owner: root
@@ -474,12 +477,11 @@ Resources:
             ]
             Resource: '*'
 
-  # Allows for TaskDefinitions to read secrets stored in SSM and create
-  # CloudWatch log groups
   TaskRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: !Sub ${AWS::StackName}-TaskRole-${AWS::Region}
+      Description: Allows for TaskDefinitions to upload telemetry data to AWS
       Path: /
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
@@ -489,10 +491,50 @@ Resources:
           Effect: Allow
           Principal:
             Service: [ecs-tasks.amazonaws.com]
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
       Policies:
-      - PolicyName: !Sub ${AWS::StackName}-TaskRole-SSM-${AWS::Region}
+      - PolicyName: !Sub ${AWS::StackName}-TaskRole-${AWS::Region}
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: [
+                'logs:PutLogEvents',
+                'logs:CreateLogGroup',
+                'logs:CreateLogStream',
+                'logs:DescribeLogStreams',
+                'logs:DescribeLogGroups',
+                'xray:PutTraceSegments',
+                'xray:PutTelemetryRecords',
+                'xray:GetSamplingRules',
+                'xray:GetSamplingTargets',
+                'xray:GetSamplingStatisticSummaries',
+                'ssm:GetParameters'
+              ]
+              Resource: '*'
+
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-ExecutionRole-${AWS::Region}
+      Description: Allows for TaskDefinitions to read secrets stored in SSM and upload logs
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Action: ['sts:AssumeRole']
+          Sid: ''
+          Effect: Allow
+          Principal:
+            Service: [ecs-tasks.amazonaws.com]
+      ManagedPolicyArns: [
+        # 'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy',
+        'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy',
+        'arn:aws:iam::aws:policy/CloudWatchLogsFullAccess',
+      ]
+      Policies:
+      # Allows for the collector sidecar to access specific ingest tokens stored
+      # in SSM on AWS
+      - PolicyName: !Sub ${AWS::StackName}-ExecutionRole-SSM-${AWS::Region}
         PolicyDocument:
           Version: '2012-10-17'
           Statement:
@@ -628,12 +670,16 @@ Resources:
       ServiceRegistries:
       - RegistryArn: !GetAtt CartsDBDiscoveryService.Arn
         Port: 27017
-  
+
   CartsTask:
     Type: AWS::ECS::TaskDefinition
     Properties:
       Family: !Sub ${AWS::StackName}-carts
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
       NetworkMode: awsvpc
+      Memory: '968'
+      Cpu: '1024'
       ContainerDefinitions:
       - Essential: 'true'
         Image: xitric/carts:1.0.0
@@ -644,37 +690,56 @@ Resources:
             awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
             awslogs-region: !Ref 'AWS::Region'
             awslogs-stream-prefix: carts
-        Memory: '768'
         Command:
         - "--db=carts-db.sockshop.com"
         PortMappings:
           - ContainerPort: 80
+        DependsOn:
+          - ContainerName: aws-collector
+            Condition: START
       - Essential: 'true'
-        Image: xitric/collector-contrib:latest
-        Name: otel-contrib-collector
+        Image: 'amazon/aws-otel-collector:latest'
+        Name: aws-collector
+        Command:
+          - '--config=/etc/config/aws-collector-config.yaml'
         LogConfiguration:
           LogDriver: awslogs
           Options:
             awslogs-create-group: 'true'
             awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
             awslogs-region: !Ref 'AWS::Region'
-            awslogs-stream-prefix: otel-contrib-collector
-        Memory: '200'
-        Command:
-          - '--config=/etc/config/otel-collector-config.yaml'
-          - '--mem-ballast-size-mib=100'
+            awslogs-stream-prefix: aws-collector
         MountPoints:
           - ContainerPath: /etc/config
             SourceVolume: collector-config-volume
             ReadOnly: true
         PortMappings:
+          - HostPort: 2000
+            Protocol: udp
+            ContainerPort: 2000
           - HostPort: 4317
             Protocol: tcp
             ContainerPort: 4317
-        Secrets:
-          - Name: HUMIO_INGEST_TOKEN
-            ValueFrom: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/ecs/sockshop/humio_ingest_token/traces
-      ExecutionRoleArn: !Ref TaskRole
+          - HostPort: 8125
+            Protocol: udp
+            ContainerPort: 8125
+      - Essential: 'false'
+        Name: aoc-statsd-emitter
+        Image: 'alpine/socat:latest'
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-create-group: 'true'
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: statsd
+        DependsOn:
+          - ContainerName: aws-collector
+            Condition: START
+        EntryPoint:
+          - "/bin/sh"
+          - "-c"
+          - "while true; do echo 'statsdTestMetric:1|c' | socat -v -t 0 - UDP:127.0.0.1:8125; sleep 1; done"
       Volumes:
         - Name: collector-config-volume
           Host:
@@ -1263,6 +1328,76 @@ Resources:
       ServiceRegistries:
       - RegistryArn: !GetAtt RabbitMQDiscoveryService.Arn
         Port: 5672
+
+  HumioCollectorTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub ${AWS::StackName}-humio-collector
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+      NetworkMode: awsvpc
+      Memory: '200'
+      Cpu: '128'
+      ContainerDefinitions:
+      - Essential: 'true'
+        Image: xitric/collector-contrib:latest
+        Name: humio-collector
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            awslogs-create-group: 'true'
+            awslogs-group: !Sub ECSLogGroup-${AWS::StackName}
+            awslogs-region: !Ref 'AWS::Region'
+            awslogs-stream-prefix: humio-collector
+        Command:
+          - '--config=/etc/config/humio-collector-config.yaml'
+          - '--mem-ballast-size-mib=100'
+        MountPoints:
+          - ContainerPath: /etc/config
+            SourceVolume: collector-config-volume
+            ReadOnly: true
+        PortMappings:
+          - HostPort: 4317
+            Protocol: tcp
+            ContainerPort: 4317
+        Secrets:
+          - Name: HUMIO_INGEST_TOKEN
+            ValueFrom: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/ecs/sockshop/humio_ingest_token/traces
+      Volumes:
+        - Name: collector-config-volume
+          Host:
+            SourcePath: /etc/config
+  HumioCollectorDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties:
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig: 
+        FailureThreshold: 1
+      Name: humio-collector
+      NamespaceId: !Ref SockShopNamespace
+  HumioCollectorService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref 'ECSCluster'
+      DesiredCount: '1'
+      TaskDefinition: !Ref 'HumioCollectorTask'
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          SecurityGroups:
+            - !Ref EcsSecurityGroup
+          Subnets:
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
+      ServiceName: humio-collector
+      ServiceRegistries:
+      - RegistryArn: !GetAtt HumioCollectorDiscoveryService.Arn
+        Port: 4317
 
   # SockShop databases
   CatalogueRDS:
