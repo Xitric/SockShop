@@ -900,11 +900,12 @@ Resources:
       Family: !Sub ${AWS::StackName}-frontend
       TaskRoleArn: !GetAtt TaskRole.Arn
       ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+      NetworkMode: host
       Memory: '456'
       Cpu: '512'
       ContainerDefinitions:
       - Essential: 'true'
-        Image: xitric/front-end:1.0.1
+        Image: xitric/front-end:1.0.3
         Name: front-end
         LogConfiguration:
           LogDriver: awslogs
@@ -924,8 +925,6 @@ Resources:
         DependsOn:
           - ContainerName: aws-collector
             Condition: START
-        Links:
-            - aws-collector
       - Essential: 'true'
         Image: 'xitric/aws-collector:1.0.0'
         Name: aws-collector
@@ -1061,6 +1060,8 @@ Resources:
             Value: 'user-db.sockshop.com:27017'
           - Name: ZIPKIN
             Value: http://localhost:9411/api/v1/spans
+          - Name: HATEOAS
+            Value: user.sockshop.com
         PortMappings:
           - ContainerPort: 80
         DependsOn:
