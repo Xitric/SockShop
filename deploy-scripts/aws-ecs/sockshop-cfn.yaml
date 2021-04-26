@@ -13,28 +13,33 @@ Parameters:
     Default: 10.192.0.0/16
 
   PublicSubnet1CIDR:
-    Description: Please enter the IP range (CIDR notation) for the first public subnet
+    Description: Please enter the IP range (CIDR notation) for the public subnet in the first Availability Zone
     Type: String
     Default: 10.192.10.0/24
 
   PublicSubnet2CIDR:
-    Description: Please enter the IP range (CIDR notation) for the second public subnet
+    Description: Please enter the IP range (CIDR notation) for the public subnet in the second Availability Zone
+    Type: String
+    Default: 10.192.11.0/24
+
+  PrivateSubnet1CIDR:
+    Description: Please enter the IP range (CIDR notation) for the private subnet in the first Availability Zone
     Type: String
     Default: 10.192.20.0/24
+
+  PrivateSubnet2CIDR:
+    Description: Please enter the IP range (CIDR notation) for the private subnet in the second Availability Zone
+    Type: String
+    Default: 10.192.21.0/24
 
   # t2.micro is limited to two network interfaces, meaning that for each
   # instance we can have the instance network interface itself + 1 service. We
   # have 12 services in total, 11 of which require their own network interface.
   # Thus, we need 11 instances.
-  DesiredCapacity:
+  Capacity:
     Type: Number
-    Default: '11'
+    Default: '12'
     Description: Number of instances to launch in your ECS cluster.
-
-  MaxSize:
-    Type: Number
-    Default: '11'
-    Description: Maximum number of instances that can be launched in your ECS cluster.
 
   InstanceType:
     Description: EC2 instance type
@@ -136,7 +141,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName} Public Subnet 1
+          Value: !Sub ${AWS::StackName} Public Subnet (AZ1)
 
   PublicSubnet2:
     Type: AWS::EC2::Subnet
@@ -149,7 +154,57 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub ${AWS::StackName} Public Subnet 2
+          Value: !Sub ${AWS::StackName} Public Subnet (AZ2)
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select
+        - 0
+        - Fn::GetAZs: !Ref 'AWS::Region'
+      CidrBlock: !Ref PrivateSubnet1CIDR
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName} Private Subnet (AZ1)
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select
+        - 1
+        - Fn::GetAZs: !Ref 'AWS::Region'
+      CidrBlock: !Ref PrivateSubnet2CIDR
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName} Private Subnet (AZ2)
+
+  NatGateway1EIP:
+    Type: AWS::EC2::EIP
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      Domain: vpc
+
+  NatGateway2EIP:
+    Type: AWS::EC2::EIP
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      Domain: vpc
+
+  NatGateway1:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGateway1EIP.AllocationId
+      SubnetId: !Ref PublicSubnet1
+
+  NatGateway2:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt NatGateway2EIP.AllocationId
+      SubnetId: !Ref PublicSubnet2
 
   PublicRouteTable:
     Type: AWS::EC2::RouteTable
@@ -178,6 +233,48 @@ Resources:
     Properties:
       RouteTableId: !Ref PublicRouteTable
       SubnetId: !Ref PublicSubnet2
+
+  PrivateRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName} Private Routes (AZ1)
+
+  DefaultPrivateRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway1
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable1
+      SubnetId: !Ref PrivateSubnet1
+
+  PrivateRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${AWS::StackName} Private Routes (AZ2)
+
+  DefaultPrivateRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NatGateway2
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable2
+      SubnetId: !Ref PrivateSubnet2
 
   # Cluster with EC2 instance
   ECSCluster:
@@ -238,12 +335,12 @@ Resources:
       VPCZoneIdentifier:
         - !Join
           - ','
-          - - !Ref PublicSubnet1
-            - !Ref PublicSubnet2
+          - - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
       LaunchConfigurationName: !Ref ECSLaunchConfiguration
       MinSize: '1'
-      MaxSize: !Ref MaxSize
-      DesiredCapacity: !Ref DesiredCapacity
+      MaxSize: !Ref Capacity
+      DesiredCapacity: !Ref Capacity
       Tags:
         - Key: Name
           Value: !Sub ${AWS::StackName} ECS Instance
@@ -525,8 +622,8 @@ Resources:
           SecurityGroups:
             - !Ref EcsSecurityGroup
           Subnets:
-            - !Ref PublicSubnet1
-            - !Ref PublicSubnet2
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
       ServiceName: carts-db
       ServiceRegistries:
       - RegistryArn: !GetAtt CartsDBDiscoveryService.Arn
@@ -607,8 +704,8 @@ Resources:
           SecurityGroups:
             - !Ref EcsSecurityGroup
           Subnets:
-            - !Ref PublicSubnet1
-            - !Ref PublicSubnet2
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
       ServiceName: carts
       ServiceRegistries:
       - RegistryArn: !GetAtt CartsDiscoveryService.Arn
@@ -672,8 +769,8 @@ Resources:
           SecurityGroups:
             - !Ref EcsSecurityGroup
           Subnets:
-            - !Ref PublicSubnet1
-            - !Ref PublicSubnet2
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
       ServiceName: catalogue
       ServiceRegistries:
       - RegistryArn: !GetAtt CatalogueDiscoveryService.Arn
@@ -762,8 +859,8 @@ Resources:
           SecurityGroups:
             - !Ref EcsSecurityGroup
           Subnets:
-            - !Ref PublicSubnet1
-            - !Ref PublicSubnet2
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
       ServiceName: session-db
       ServiceRegistries:
       - RegistryArn: !GetAtt SessionDBDiscoveryService.Arn
@@ -818,8 +915,8 @@ Resources:
           SecurityGroups:
             - !Ref EcsSecurityGroup
           Subnets:
-            - !Ref PublicSubnet1
-            - !Ref PublicSubnet2
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
       ServiceName: user
       ServiceRegistries:
       - RegistryArn: !GetAtt UserDiscoveryService.Arn
@@ -869,8 +966,8 @@ Resources:
           SecurityGroups:
             - !Ref EcsSecurityGroup
           Subnets:
-            - !Ref PublicSubnet1
-            - !Ref PublicSubnet2
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
       ServiceName: user-db
       ServiceRegistries:
       - RegistryArn: !GetAtt UserDBDiscoveryService.Arn
@@ -921,8 +1018,8 @@ Resources:
           SecurityGroups:
             - !Ref EcsSecurityGroup
           Subnets:
-            - !Ref PublicSubnet1
-            - !Ref PublicSubnet2
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
       ServiceName: orders-db
       ServiceRegistries:
       - RegistryArn: !GetAtt OrdersDBDiscoveryService.Arn
@@ -974,8 +1071,8 @@ Resources:
           SecurityGroups:
             - !Ref EcsSecurityGroup
           Subnets:
-            - !Ref PublicSubnet1
-            - !Ref PublicSubnet2
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
       ServiceName: orders
       ServiceRegistries:
       - RegistryArn: !GetAtt OrdersDiscoveryService.Arn
@@ -1028,8 +1125,8 @@ Resources:
           SecurityGroups:
             - !Ref EcsSecurityGroup
           Subnets:
-            - !Ref PublicSubnet1
-            - !Ref PublicSubnet2
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
       ServiceName: payment
       ServiceRegistries:
       - RegistryArn: !GetAtt PaymentDiscoveryService.Arn
@@ -1079,8 +1176,8 @@ Resources:
           SecurityGroups:
             - !Ref EcsSecurityGroup
           Subnets:
-            - !Ref PublicSubnet1
-            - !Ref PublicSubnet2
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
       ServiceName: shipping
       ServiceRegistries:
       - RegistryArn: !GetAtt ShippingDiscoveryService.Arn
@@ -1160,8 +1257,8 @@ Resources:
           SecurityGroups:
             - !Ref EcsSecurityGroup
           Subnets:
-            - !Ref PublicSubnet1
-            - !Ref PublicSubnet2
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
       ServiceName: rabbitmq
       ServiceRegistries:
       - RegistryArn: !GetAtt RabbitMQDiscoveryService.Arn
