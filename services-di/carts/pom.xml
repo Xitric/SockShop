@@ -92,6 +92,18 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Fluentd dependencies -->
+        <dependency>
+            <groupId>com.sndyuk</groupId>
+            <artifactId>logback-more-appenders</artifactId>
+            <version>1.8.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.fluentd</groupId>
+            <artifactId>fluent-logger</artifactId>
+            <version>0.3.4</version>
+        </dependency>
+
         <!-- OTel tracer dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

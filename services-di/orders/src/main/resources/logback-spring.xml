@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE logback>
+<configuration>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>%date{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %level %logger [%file:%line] [%thread]: %msg %n%rEx{10}</Pattern>
+        </encoder>
+    </appender>
+	<appender name="FLUENT" class="ch.qos.logback.more.appenders.DataFluentAppender">
+		<tag>debug</tag>
+		<label>orders.log</label>
+		<remoteHost>fluentd</remoteHost>
+		<port>24224</port>
+        <encoder>
+            <Pattern>%date{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %level %logger [%file:%line] [%thread]: %msg %n%rEx{10}</Pattern>
+        </encoder>
+	</appender>
+
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FLUENT" />
+	</root>
+</configuration>
