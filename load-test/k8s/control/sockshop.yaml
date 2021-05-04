@@ -77,7 +77,7 @@ spec:
     spec:
       containers:
       - name: carts
-        image: xitric/carts:ctrl-1.0.0
+        image: xitric/carts:ctrl-1.0.1
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -356,7 +356,7 @@ spec:
     spec:
       containers:
       - name: orders
-        image: xitric/orders:ctrl-1.0.0
+        image: xitric/orders:ctrl-1.0.1
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -570,7 +570,7 @@ spec:
     spec:
       containers:
       - name: shipping
-        image: xitric/shipping:ctrl-1.0.0
+        image: xitric/shipping:ctrl-1.0.1
         imagePullPolicy: IfNotPresent
         resources:
           requests:
