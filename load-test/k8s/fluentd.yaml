@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-conf
+  labels:
+    app: fluentd
+    component: fluentd-conf
+data:
+  fluentd-config: |
+    <source>
+      @type           forward
+      port            24224
+      bind            0.0.0.0
+    </source>
+    <match **>
+      @type           elasticsearch
+      host            cloud.humio.com
+      port            9200
+      scheme          https
+      ssl_version     TLSv1_2
+      user            sockshop-traces
+      password        052c2230-f26a-40bf-8b6e-d8375b936af3
+      logstash_format true
+    </match>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fluentd
+spec:
+  selector:
+    matchLabels:
+      app: fluentd
+  template:
+    metadata:
+      labels:
+        app: fluentd
+    spec:
+      containers:
+      - name: fluentd
+        image: xitric/fluentd:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 24224
+        volumeMounts:
+        - name: fluentd-config-vol
+          mountPath: /fluentd/etc
+      volumes:
+        - name: fluentd-config-vol
+          configMap:
+            name: fluentd-conf
+            items:
+              - key: fluentd-config
+                path: fluent.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fluentd
+spec:
+  selector:
+    app: fluentd
+  ports:
+  - name: fluentd-tcp
+    protocol: TCP
+    port: 24224
+    targetPort: 24224
+  - name: fluentd-udp
+    protocol: UDP
+    port: 24224
+    targetPort: 24224

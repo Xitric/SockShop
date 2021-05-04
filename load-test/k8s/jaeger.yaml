@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger
+  namespace: istio-system
+  labels:
+    app: jaeger
+spec:
+  selector:
+    matchLabels:
+      app: jaeger
+  template:
+    metadata:
+      labels:
+        app: jaeger
+      annotations:
+        sidecar.istio.io/inject: "false"
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "14269"
+    spec:
+      containers:
+      - name: jaeger
+        image: em135/humio-jaeger-plugin:latest
+        imagePullPolicy: Always
+        env:
+        - name: API_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: humio-secrets
+              key: humio-api-token
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 14269
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 14269
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 16686
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger
+  namespace: istio-system
+  labels:
+    app: jaeger
+spec:
+  type: ClusterIP
+  ports:
+  - name: dashboard
+    port: 80
+    targetPort: 16686
+  selector:
+    app: jaeger
