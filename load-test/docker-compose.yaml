@@ -1,0 +1,14 @@
+version: '3.5'
+
+services:
+    master:
+        image: locustio/locust
+        volumes:
+            - ./workloads:/app/locust
+        command: -f /app/locust/${SCRIPT} --csv=${TEST_NAME} --csv-full-history --headless -H ${HOST} -u ${USERS} -r ${RATE} -t ${DURATION} --expect-workers ${WORKERS} --master
+    
+    worker:
+        image: locustio/locust
+        volumes:
+            - ./workloads:/app/locust
+        command: -f /app/locust/${SCRIPT} -H ${HOST} --worker --master-host master
