@@ -52,10 +52,6 @@ public class OrdersController {
     public
     @ResponseBody
         CustomerOrder newOrder(@RequestBody NewOrderResource item, @RequestHeader Map<String, String> headers) {
-        headers.forEach((key, value) -> {
-            LOG.info(String.format("Header '%s' = %s", key, value));
-        });
-
         try {
 
             if (item.address == null || item.customer == null || item.card == null || item.items == null) {
