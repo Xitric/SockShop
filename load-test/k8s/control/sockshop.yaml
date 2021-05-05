@@ -17,6 +17,7 @@ spec:
       containers:
       - name: carts-db
         image: mongo
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             cpu: 200m
@@ -296,6 +297,7 @@ spec:
       containers:
       - name: orders-db
         image: mongo
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             cpu: 200m

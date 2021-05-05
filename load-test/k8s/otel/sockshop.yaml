@@ -7,8 +7,6 @@ data:
   OTEL_TRACES_EXPORTER: otlp
   OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector.istio-system:4317
   OTEL_METRICS_EXPORTER: none
-  OTEL_PROPAGATORS: b3multi
-  OTEL_JAVAAGENT_DEBUG: "true"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -29,12 +27,13 @@ spec:
       containers:
       - name: carts-db
         image: mongo
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             cpu: 200m
           limits:
-            cpu: 500m
-            memory: 128Mi
+            cpu: 1000m
+            memory: 512Mi
         ports:
         - name: mongo
           containerPort: 27017
@@ -328,6 +327,7 @@ spec:
       containers:
       - name: orders-db
         image: mongo
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             cpu: 200m
