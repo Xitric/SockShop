@@ -8,9 +8,9 @@
     </appender>
 	<appender name="FLUENCY" class="ch.qos.logback.more.appenders.FluencyLogbackAppender">
 		<tag>debug</tag>
-		<label>orders.log</label>
 		<remoteHost>fluentd</remoteHost>
 		<port>24224</port>
+        <useEventTime>true</useEventTime>
         <encoder>
             <Pattern>%date{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %level %logger [%file:%line] [%thread]: %msg %n%rEx{10}</Pattern>
         </encoder>
