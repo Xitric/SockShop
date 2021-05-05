@@ -88,7 +88,7 @@ spec:
     spec:
       containers:
       - name: carts
-        image: xitric/carts:ctrl-1.0.2
+        image: xitric/carts:ctrl-1.0.3
         imagePullPolicy: Always
         resources:
           requests:
@@ -622,7 +622,7 @@ spec:
     spec:
       containers:
       - name: shipping
-        image: xitric/shipping:ctrl-1.0.2
+        image: xitric/shipping:ctrl-1.0.3
         imagePullPolicy: Always
         resources:
           requests:

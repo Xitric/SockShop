@@ -1,5 +1,9 @@
 import base64
-from locust import HttpUser
+import logging
+import os
+import time
+from logging.handlers import RotatingFileHandler
+from locust import HttpUser, events
 
 class AuthorizedClient(HttpUser):
     abstract= True
@@ -61,3 +65,20 @@ class AuthorizedClient(HttpUser):
             # account info
             self.__update_address()
             self.__update_visa()
+
+    # Store all request data for analysis
+    success_handler = RotatingFileHandler(filename=os.path.join('all-stats.txt'))
+
+    formatter = logging.Formatter('%(asctime)s | %(name)s | %(levelname)s | %(message)s')
+    formatter.converter = time.gmtime
+    success_handler.setFormatter(formatter)
+
+    success_logger = logging.getLogger('request.success')
+    success_logger.propagate = False
+    success_logger.addHandler(success_handler)
+
+    @classmethod
+    @events.request_success.add_listener
+    def request(request_type, name, response_time, response_length):
+        msg = ' | '.join([str(request_type), name, str(response_time), str(response_length)])
+        AuthorizedClient.success_logger.error(msg)

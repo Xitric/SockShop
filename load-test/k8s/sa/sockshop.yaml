@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: agent-config
 data:
-  JAVA_TOOL_OPTIONS: -javaagent:/usr/src/agent/opentracing-specialagent-1.7.5-SNAPSHOT.jar -Dsa.exporter=/usr/src/agent/opentelemetry-bridge-0.4.1.jar -Dot.otel.exporter=jaeger -Dot.otel.exporter.jaeger.serviceName=${SERVICE_NAME} -Dot.otel.exporter.jaeger.address=otel-collector.istio-system:14250 -Dot.otel.exporter.jaeger.deadline=10000
+  JAVA_TOOL_OPTIONS: -javaagent:/usr/src/agent/opentracing-specialagent-1.7.5-SNAPSHOT.jar -Dsa.exporter=/usr/src/agent/opentelemetry-bridge-0.4.1.jar -Dot.otel.exporter=jaeger -Dot.otel.exporter.jaeger.serviceName=${SERVICE_NAME} -Dot.otel.exporter.jaeger.address=otel-collector.istio-system:14250 -Dot.otel.exporter.jaeger.deadline=10000 -Dsa.integration.*.disable -Dsa.integration.thread.enable -Dsa.integration.spring:scheduling.enable -Dsa.integration.servlet.enable -Dsa.integration.spring:webmvc.enable -Dsa.integration.httpurlconnection.enable -Dsa.integration.rabbitmq:client.enable -Dsa.integration.kafka:client.enable -Dsa.integration.kafka:streams.enable -Dsa.integration.jms.enable -Dsa.integration.reactor.enable -Dsa.integration.redisson.enable -Dsa.integration.grpc.enable -Dsa.integration.rxjava2.enable -Dsa.integration.rxjava3.enable
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -85,7 +85,7 @@ spec:
     spec:
       containers:
       - name: carts
-        image: xitric/carts:ctrl-1.0.2
+        image: xitric/carts:ctrl-1.0.3
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -383,7 +383,7 @@ spec:
     spec:
       containers:
       - name: orders
-        image: xitric/orders:ctrl-1.0.2
+        image: xitric/orders:ctrl-1.0.3
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -615,7 +615,7 @@ spec:
     spec:
       containers:
       - name: shipping
-        image: xitric/shipping:ctrl-1.0.2
+        image: xitric/shipping:ctrl-1.0.3
         imagePullPolicy: IfNotPresent
         resources:
           requests:
