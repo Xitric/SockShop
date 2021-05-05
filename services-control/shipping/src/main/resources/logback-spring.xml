@@ -6,7 +6,7 @@
             <Pattern>%date{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %level %logger [%file:%line] [%thread]: %msg %n%rEx{10}</Pattern>
         </encoder>
     </appender>
-	<appender name="FLUENT" class="ch.qos.logback.more.appenders.DataFluentAppender">
+	<appender name="FLUENCY" class="ch.qos.logback.more.appenders.FluencyLogbackAppender">
 		<tag>debug</tag>
 		<label>orders.log</label>
 		<remoteHost>fluentd</remoteHost>
@@ -18,6 +18,6 @@
 
 	<root level="INFO">
 		<appender-ref ref="CONSOLE" />
-		<appender-ref ref="FLUENT" />
+		<appender-ref ref="FLUENCY" />
 	</root>
 </configuration>
