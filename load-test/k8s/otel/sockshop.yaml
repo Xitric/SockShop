@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: agent-config
 data:
-  JAVA_TOOL_OPTIONS: -javaagent:/agent/opentelemetry-javaagent-all.jar
+  JAVA_TOOL_OPTIONS: -javaagent:/agent/opentelemetry-javaagent-all.jar -Dotel.instrumentation.common.default-enabled=false -Dotel.instrumentation.executor.enabled=true -Dotel.instrumentation.tomcat.enabled=true -Dotel.instrumentation.spring-webmvc.enabled=true -Dotel.instrumentation.http-url-connection.enabled=true -Dotel.instrumentation.rabbitmq.enabled=true -Dotel.instrumentation.kafka.enabled=true -Dotel.instrumentation.jms.enabled=true -Dotel.instrumentation.reactor.enabled=true -Dotel.instrumentation.redisson.enabled=true -Dotel.instrumentation.grpc.enabled=true -Dotel.instrumentation.rxjava2.enabled=true -Dotel.instrumentation.rxjava3.enabled=true
   OTEL_TRACES_EXPORTER: otlp
   OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector.istio-system:4317
   OTEL_METRICS_EXPORTER: none
@@ -89,7 +89,7 @@ spec:
       containers:
       - name: carts
         image: xitric/carts:ctrl-1.0.2
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         resources:
           requests:
             cpu: 500m
@@ -388,8 +388,8 @@ spec:
     spec:
       containers:
       - name: orders
-        image: xitric/orders:ctrl-1.0.2
-        imagePullPolicy: IfNotPresent
+        image: xitric/orders:ctrl-1.0.3
+        imagePullPolicy: Always
         resources:
           requests:
             cpu: 500m
@@ -623,7 +623,7 @@ spec:
       containers:
       - name: shipping
         image: xitric/shipping:ctrl-1.0.2
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         resources:
           requests:
             cpu: 200m

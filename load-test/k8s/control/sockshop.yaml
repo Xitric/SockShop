@@ -358,7 +358,7 @@ spec:
     spec:
       containers:
       - name: orders
-        image: xitric/orders:ctrl-1.0.2
+        image: xitric/orders:ctrl-1.0.3
         imagePullPolicy: IfNotPresent
         resources:
           requests:
