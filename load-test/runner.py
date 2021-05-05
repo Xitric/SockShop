@@ -85,6 +85,7 @@ def copy_locust_files(test_name):
     os.system(f"docker cp loadtest_master_1:/home/locust/{test_name}_stats.csv test_results/{test_name}/")
     os.system(f"docker cp loadtest_master_1:/home/locust/{test_name}_stats_history.csv test_results/{test_name}/")
     os.system(f"docker cp loadtest_master_1:/home/locust/{test_name}_failures.csv test_results/{test_name}/")
+    os.system(f"docker cp loadtest_master_1:/home/locust/all-stats.txt test_results/{test_name}/")
 
 # Download metric results from Grafana
 def copy_grafana_results(test_name, start, end):
@@ -134,17 +135,17 @@ def run():
 
     for test_instrumentation in instrumentations:
         print(f"Deploying app: {test_instrumentation}")
-        # deploy_app(test_instrumentation)
+        deploy_app(test_instrumentation)
 
         # The host changes every time we change instrumentation
-        # test_host = get_host()
-        # print(f"New host is {test_host}")
+        test_host = get_host()
+        print(f"New host is {test_host}")
 
         for test_workload in workloads:
             for test_clients in clients[test_workload]:
-                deploy_app(test_instrumentation)
-                test_host = get_host()
-                print(f"New host is {test_host}")
+                # deploy_app(test_instrumentation)
+                # test_host = get_host()
+                # print(f"New host is {test_host}")
 
                 test_name = as_test_name(
                     test_instrumentation,
@@ -188,10 +189,10 @@ def run():
                 # Pull test results from Grafana
                 copy_grafana_results(test_name, int(grafana_start), int(grafana_end))
 
-                remove_app(test_instrumentation)
+                # remove_app(test_instrumentation)
 
         print(f"Removing app: {test_instrumentation}")
-        # remove_app(test_instrumentation)
+        remove_app(test_instrumentation)
         print("App removed")
     
     print("Stopping test")
