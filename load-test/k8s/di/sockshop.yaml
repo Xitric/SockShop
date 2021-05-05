@@ -1,3 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-conf
+  labels:
+    component: spring-conf
+data:
+  spring-config: |
+    spring.sleuth.integration.enabled=false
+    spring.sleuth.function.enabled=false
+    spring.sleuth.feign.enabled=false
+    spring.sleuth.feign.processor.enabled=false
+    spring.sleuth.opentracing.enabled=false
+    spring.sleuth.quartz.enabled=false
+    spring.sleuth.reactor.instrumentation-type=DECORATE_QUEUES
+    spring.sleuth.circuitbreaker.enabled=false
+    spring.sleuth.config.server.enabled=false
+    spring.sleuth.deployer.enabled=false
+    spring.sleuth.rsocket.enabled=false
+    spring.sleuth.batch.enabled=false
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -93,6 +114,8 @@ spec:
           value: otel-collector.istio-system
         - name: JAVA_OPTS
           value: -Xms64m -Xmx128m -XX:PermSize=32m -XX:MaxPermSize=64m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom
+        - name: JAVA_TOOL_OPTIONS
+          value: -Dspring.config.additional-location=file:/config/
         securityContext:
           runAsNonRoot: true
           runAsUser: 10001
@@ -103,12 +126,20 @@ spec:
               - NET_BIND_SERVICE
           readOnlyRootFilesystem: true
         volumeMounts:
-        - mountPath: /tmp
-          name: tmp-volume
+        - name: tmp-volume
+          mountPath: /tmp
+        - name: spring-config-vol
+          mountPath: /config
       volumes:
       - name: tmp-volume
         emptyDir:
           medium: Memory
+      - name: spring-config-vol
+        configMap:
+          name: spring-conf
+          items:
+            - key: spring-config
+              path: application.properties
       nodeSelector:
         beta.kubernetes.io/os: linux
 ---
@@ -373,6 +404,8 @@ spec:
           value: otel-collector.istio-system
         - name: JAVA_OPTS
           value: -Xms64m -Xmx128m -XX:PermSize=32m -XX:MaxPermSize=64m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom
+        - name: JAVA_TOOL_OPTIONS
+          value: -Dspring.config.additional-location=file:/config/
         ports:
         - containerPort: 80
         securityContext:
@@ -385,12 +418,20 @@ spec:
               - NET_BIND_SERVICE
           readOnlyRootFilesystem: true
         volumeMounts:
-        - mountPath: /tmp
-          name: tmp-volume
+        - name: tmp-volume
+          mountPath: /tmp
+        - name: spring-config-vol
+          mountPath: /config
       volumes:
       - name: tmp-volume
         emptyDir:
           medium: Memory
+      - name: spring-config-vol
+        configMap:
+          name: spring-conf
+          items:
+            - key: spring-config
+              path: application.properties
       nodeSelector:
         beta.kubernetes.io/os: linux
 ---
@@ -589,6 +630,8 @@ spec:
           value: otel-collector.istio-system
         - name: JAVA_OPTS
           value: -Xms64m -Xmx128m -XX:PermSize=32m -XX:MaxPermSize=64m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom
+        - name: JAVA_TOOL_OPTIONS
+          value: -Dspring.config.additional-location=file:/config/
         ports:
         - containerPort: 80
         securityContext:
@@ -601,12 +644,20 @@ spec:
               - NET_BIND_SERVICE
           readOnlyRootFilesystem: true
         volumeMounts:
-        - mountPath: /tmp
-          name: tmp-volume
+        - name: tmp-volume
+          mountPath: /tmp
+        - name: spring-config-vol
+          mountPath: /config
       volumes:
       - name: tmp-volume
         emptyDir:
           medium: Memory
+      - name: spring-config-vol
+        configMap:
+          name: spring-conf
+          items:
+            - key: spring-config
+              path: application.properties
       nodeSelector:
         beta.kubernetes.io/os: linux
 ---
