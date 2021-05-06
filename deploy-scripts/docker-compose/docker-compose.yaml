@@ -196,7 +196,3 @@ services:
     ports:
       - 24224:24224
       - 24224:24224/udp
-
-volumes:
-  humio_data:
-    name: humio_data
