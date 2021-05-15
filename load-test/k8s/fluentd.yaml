@@ -18,8 +18,8 @@ data:
       port            9200
       scheme          https
       ssl_version     TLSv1_2
-      user            sockshop-traces
-      password        052c2230-f26a-40bf-8b6e-d8375b936af3
+      user            sandbox
+      password        4bc41062-93b9-409a-bd44-32aa3b52e603
       logstash_format true
     </match>
 ---
@@ -39,6 +39,7 @@ spec:
       containers:
       - name: fluentd
         image: xitric/fluentd:latest
+        imagePullPolicy: IfNotPresent
         resources:
           limits:
             memory: "128Mi"

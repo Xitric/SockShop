@@ -53,7 +53,7 @@ data:
         traces/1:
           receivers: [zipkin,otlp,jaeger]
           processors: [batch]
-          exporters: [logging]
+          exporters: [humio]
 ---
 apiVersion: v1
 kind: Service
@@ -101,7 +101,7 @@ spec:
       containers:
       - image: em135/collector-contrib:latest
         name: otel-collector
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         env:
         - name: HUMIO_INGEST_TOKEN_TRACES
           valueFrom:
