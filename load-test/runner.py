@@ -23,7 +23,7 @@ instrumentations = ["sa", "otel", "di", "control"]
 # Server seems to be able to keep up with this
 rampup_clients_per_second = 2
 # Seems to be a good distribution
-locust_workers = 1
+locust_workers = 8
 # Time, in seconds, used to run each test
 run_duration = 30 * 60
 
@@ -85,7 +85,8 @@ def copy_locust_files(test_name):
     os.system(f"docker cp loadtest_master_1:/home/locust/{test_name}_stats.csv test_results/{test_name}/")
     os.system(f"docker cp loadtest_master_1:/home/locust/{test_name}_stats_history.csv test_results/{test_name}/")
     os.system(f"docker cp loadtest_master_1:/home/locust/{test_name}_failures.csv test_results/{test_name}/")
-    os.system(f"docker cp loadtest_master_1:/home/locust/all-stats.txt test_results/{test_name}/")
+    for worker in range(locust_workers):
+        os.system(f"docker cp loadtest_worker_{worker+1}:/home/locust/all-stats.txt test_results/{test_name}/all-stats-{worker+1}.txt")
 
 # Download metric results from Grafana
 def copy_grafana_results(test_name, start, end):

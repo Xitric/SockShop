@@ -69,7 +69,7 @@ class AuthorizedClient(HttpUser):
     # Store all request data for analysis
     success_handler = RotatingFileHandler(filename=os.path.join('all-stats.txt'))
 
-    formatter = logging.Formatter('%(asctime)s | %(name)s | %(levelname)s | %(message)s')
+    formatter = logging.Formatter('%(asctime)s | %(message)s')
     formatter.converter = time.gmtime
     success_handler.setFormatter(formatter)
 
