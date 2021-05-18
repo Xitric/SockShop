@@ -19,6 +19,9 @@ data:
   #   spring.sleuth.deployer.enabled=false
   #   spring.sleuth.rsocket.enabled=false
   #   spring.sleuth.batch.enabled=false
+  #   spring.sleuth.sampler.probability=0.0078
+  #   spring.sleuth.otel.config.trace-id-ratio-based=0.0078
+  #   spring.sleuth.sampler.percentage=0.0078
   spring-config: ""
 ---
 apiVersion: apps/v1
@@ -45,8 +48,8 @@ spec:
           requests:
             cpu: 200m
           limits:
-            cpu: 500m
-            memory: 128Mi
+            cpu: 1500m
+            memory: 512Mi
         ports:
         - name: mongo
           containerPort: 27017

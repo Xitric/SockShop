@@ -22,8 +22,8 @@ spec:
           requests:
             cpu: 200m
           limits:
-            cpu: 500m
-            memory: 128Mi
+            cpu: 1500m
+            memory: 512Mi
         ports:
         - name: mongo
           containerPort: 27017
