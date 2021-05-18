@@ -10,20 +10,18 @@ from pathlib import Path
 
 # The levels for the client factor
 clients = {
-    # "cart_client": [500, 400, 300, 200, 100, 0],
-    "cart_client": [800, 700, 600],
-    "checkout_client": [250, 200, 150, 100, 50, 0],
+    "cart_client": [0, 100, 200, 300, 400, 500, 600, 700, 800],
+    "checkout_client": [0, 20, 40, 60, 80],
 }
 # The levels for the workload factor
-# workloads = ["cart_client", "checkout_client"]
-workloads = ["checkout_client"]
+workloads = ["cart_client", "checkout_client"]
 # The levels for the instrumentation technique factor
 instrumentations = ["sa", "otel", "di", "control"]
 
 # Server seems to be able to keep up with this
 rampup_clients_per_second = 2
 # Seems to be a good distribution
-locust_workers = 1
+locust_workers = 8
 # Time, in seconds, used to run each test
 run_duration = 30 * 60
 
@@ -31,31 +29,43 @@ run_duration = 30 * 60
 grafana_queries = [
     {
         "name": "cluster_cpu",
-        "query": "sum(rate(container_cpu_usage_seconds_total%7Bid%3D%22%2F%22%7D%5B2m%5D))",
+        "query": "sum(rate(container_cpu_usage_seconds_total%7Bid%3D%22%2F%22%7D%5B4m%5D))",
     },
     {
         "name": "carts_cpu",
-        "query": "sum(rate(container_cpu_usage_seconds_total%7Bcontainer%3D%22carts%22%7D%5B2m%5D))",
+        "query": "sum(rate(container_cpu_usage_seconds_total%7Bcontainer%3D%22carts%22%7D%5B4m%5D))",
     },
     {
         "name": "carts_memory",
-        "query": "sum(rate(container_memory_usage_bytes%7Bcontainer%3D%22carts%22%7D%5B2m%5D))",
+        "query": "sum(rate(container_memory_usage_bytes%7Bcontainer%3D%22carts%22%7D%5B5m%5D))",
     },
     {
         "name": "carts_network",
-        "query": "sum(rate(container_network_transmit_bytes_total%7Bpod%3D~%22carts.*%22%7D%5B2m%5D))",
+        "query": "sum(rate(container_network_transmit_bytes_total%7Bpod%3D~%22carts.*%22%7D%5B4m%5D))",
     },
     {
         "name": "orders_cpu",
-        "query": "sum(rate(container_cpu_usage_seconds_total%7Bcontainer%3D%22orders%22%7D%5B2m%5D))",
+        "query": "sum(rate(container_cpu_usage_seconds_total%7Bcontainer%3D%22orders%22%7D%5B4m%5D))",
     },
     {
         "name": "orders_memory",
-        "query": "sum(rate(container_memory_usage_bytes%7Bcontainer%3D%22orders%22%7D%5B2m%5D))",
+        "query": "sum(rate(container_memory_usage_bytes%7Bcontainer%3D%22orders%22%7D%5B5m%5D))",
     },
     {
         "name": "orders_network",
-        "query": "sum(rate(container_network_transmit_bytes_total%7Bpod%3D~%22orders.*%22%7D%5B2m%5D))",
+        "query": "sum(rate(container_network_transmit_bytes_total%7Bpod%3D~%22orders.*%22%7D%5B4m%5D))",
+    },
+    {
+        "name": "shipping_cpu",
+        "query": "sum(rate(container_cpu_usage_seconds_total%7Bcontainer%3D%22shipping%22%7D%5B4m%5D))",
+    },
+    {
+        "name": "shipping_memory",
+        "query": "sum(rate(container_memory_usage_bytes%7Bcontainer%3D%22shipping%22%7D%5B5m%5D))",
+    },
+    {
+        "name": "shipping_network",
+        "query": "sum(rate(container_network_transmit_bytes_total%7Bpod%3D~%22shipping.*%22%7D%5B4m%5D))",
     },
 ]
 
@@ -70,7 +80,7 @@ def as_time_string(seconds):
 # Calculates the expected time spent for ramping up a test
 def get_rampup_time(clients, rate):
     # We'll add a bit of time to be on the safe side
-    return (clients / rate) * 1.2
+    return (clients / rate) * 1.3
 
 # Starts the Locust cluster in headless mode
 def start_locust(name, workload, host, duration, clients, rate, scale):
@@ -85,7 +95,8 @@ def copy_locust_files(test_name):
     os.system(f"docker cp loadtest_master_1:/home/locust/{test_name}_stats.csv test_results/{test_name}/")
     os.system(f"docker cp loadtest_master_1:/home/locust/{test_name}_stats_history.csv test_results/{test_name}/")
     os.system(f"docker cp loadtest_master_1:/home/locust/{test_name}_failures.csv test_results/{test_name}/")
-    os.system(f"docker cp loadtest_master_1:/home/locust/all-stats.txt test_results/{test_name}/")
+    for worker in range(locust_workers):
+        os.system(f"docker cp loadtest_worker_{worker+1}:/home/locust/all-stats.txt test_results/{test_name}/all-stats-{worker+1}.txt")
 
 # Download metric results from Grafana
 def copy_grafana_results(test_name, start, end):

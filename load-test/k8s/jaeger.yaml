@@ -28,6 +28,10 @@ spec:
             secretKeyRef:
               name: humio-secrets
               key: humio-api-token
+        - name: HUMIO_ENDPOINT
+          value: https://cloud.humio.com/
+        - name: HUMIO_REPOSITORY
+          value: sockshop
         livenessProbe:
           httpGet:
             path: /

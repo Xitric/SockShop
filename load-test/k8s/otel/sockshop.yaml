@@ -3,10 +3,14 @@ kind: ConfigMap
 metadata:
   name: agent-config
 data:
-  JAVA_TOOL_OPTIONS: -javaagent:/agent/opentelemetry-javaagent-all.jar -Dotel.instrumentation.common.default-enabled=false -Dotel.instrumentation.executor.enabled=true -Dotel.instrumentation.tomcat.enabled=true -Dotel.instrumentation.spring-webmvc.enabled=true -Dotel.instrumentation.http-url-connection.enabled=true -Dotel.instrumentation.rabbitmq.enabled=true -Dotel.instrumentation.kafka.enabled=true -Dotel.instrumentation.jms.enabled=true -Dotel.instrumentation.reactor.enabled=true -Dotel.instrumentation.redisson.enabled=true -Dotel.instrumentation.grpc.enabled=true -Dotel.instrumentation.rxjava2.enabled=true -Dotel.instrumentation.rxjava3.enabled=true
+  # Use this configuration for performance tests to ensure that only common featureas are enabled
+  # JAVA_TOOL_OPTIONS: -javaagent:/agent/opentelemetry-javaagent-all.jar -Dotel.instrumentation.common.default-enabled=false -Dotel.instrumentation.executor.enabled=true -Dotel.instrumentation.tomcat.enabled=true -Dotel.instrumentation.spring-webmvc.enabled=true -Dotel.instrumentation.http-url-connection.enabled=true -Dotel.instrumentation.rabbitmq.enabled=true -Dotel.instrumentation.kafka.enabled=true -Dotel.instrumentation.jms.enabled=true -Dotel.instrumentation.reactor.enabled=true -Dotel.instrumentation.redisson.enabled=true -Dotel.instrumentation.grpc.enabled=true -Dotel.instrumentation.rxjava2.enabled=true -Dotel.instrumentation.rxjava3.enabled=true
+  JAVA_TOOL_OPTIONS: -javaagent:/agent/opentelemetry-javaagent-all.jar
   OTEL_TRACES_EXPORTER: otlp
   OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector.istio-system:4317
   OTEL_METRICS_EXPORTER: none
+  # OTEL_TRACES_SAMPLER: parentbased_traceidratio
+  # OTEL_TRACES_SAMPLER_ARG: '0.0078'
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -32,7 +36,7 @@ spec:
           requests:
             cpu: 200m
           limits:
-            cpu: 1000m
+            cpu: 1500m
             memory: 512Mi
         ports:
         - name: mongo
@@ -89,7 +93,7 @@ spec:
       containers:
       - name: carts
         image: xitric/carts:ctrl-1.0.3
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             cpu: 500m
@@ -123,6 +127,7 @@ spec:
       initContainers:
       - name: install
         image: busybox
+        imagePullPolicy: IfNotPresent
         command:
         - wget
         - "-O"
@@ -389,7 +394,7 @@ spec:
       containers:
       - name: orders
         image: xitric/orders:ctrl-1.0.3
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             cpu: 500m
@@ -423,6 +428,7 @@ spec:
       initContainers:
       - name: install
         image: busybox
+        imagePullPolicy: IfNotPresent
         command:
         - wget
         - "-O"
@@ -623,7 +629,7 @@ spec:
       containers:
       - name: shipping
         image: xitric/shipping:ctrl-1.0.3
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             cpu: 200m
@@ -657,6 +663,7 @@ spec:
       initContainers:
       - name: install
         image: busybox
+        imagePullPolicy: IfNotPresent
         command:
         - wget
         - "-O"

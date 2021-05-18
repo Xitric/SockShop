@@ -2,44 +2,40 @@ import base64
 import logging
 import os
 import time
+import uuid
 from logging.handlers import RotatingFileHandler
 from locust import HttpUser, events
 
 class AuthorizedClient(HttpUser):
     abstract= True
-    next_id = 0
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        AuthorizedClient.next_id += 1
-        self.name = f"client{AuthorizedClient.next_id}"
+        self.name = f"client-{str(uuid.uuid4())}"
 
     def __login(self):
         auth_header_raw = f"{self.name}:password"
         auth_header_encoded = str(base64.b64encode(auth_header_raw.encode("utf-8")), "utf-8")
 
-        login = self.client.get("/login", headers={
-            "Authorization": f"Basic {auth_header_encoded}"
+        registration = self.client.post("/register", json={
+            "username": self.name,
+            "password": "password",
+            "email": f"{self.name}@ahsgvfaisvf.com",
+            "firstName": self.name,
+            "lastName": "testuser",
         })
 
-        if login.status_code == 200:
-            return False
+        if registration.status_code == 200:
+            # Automatically logged in, tell caller to initialize the new user
+            return True
         else:
-            # Otherwise we must register a new account
-            self.client.post("/register", json={
-                "username": self.name,
-                "password": "password",
-                "email": f"{self.name}@ahsgvfaisvf.com",
-                "firstName": self.name,
-                "lastName": "testuser",
-            })
-
             self.client.get("/login", headers={
                 "Authorization": f"Basic {auth_header_encoded}"
             })
-
-            return True
+            
+            # Logged into existing account, no setup required
+            return False
 
     def __update_address(self):
         self.client.post("/addresses", json={
@@ -69,7 +65,7 @@ class AuthorizedClient(HttpUser):
     # Store all request data for analysis
     success_handler = RotatingFileHandler(filename=os.path.join('all-stats.txt'))
 
-    formatter = logging.Formatter('%(asctime)s | %(name)s | %(levelname)s | %(message)s')
+    formatter = logging.Formatter('%(asctime)s | %(message)s')
     formatter.converter = time.gmtime
     success_handler.setFormatter(formatter)
 
