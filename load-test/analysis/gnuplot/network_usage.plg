@@ -1,0 +1,13 @@
+set term pdfcairo font ",16"
+set output result
+set key right bottom
+set title 'Network Traffic'
+set xlabel 'Load (#Clients)'
+set ylabel 'Container Outbound Traffic (MiB)'
+
+set datafile separator ","
+
+plot data using 1:($2/1e6):($3/1e6) with lp title 'Control', \
+    '' using 1:($4/1e6):($5/1e6) with lp title 'Dependency Injection', \
+    '' using 1:($6/1e6):($7/1e6) with lp title 'OpenTelemetry', \
+    '' using 1:($8/1e6):($9/1e6) with lp title 'SpecialAgent'

@@ -1,0 +1,13 @@
+set term pdfcairo font ",16"
+set output result
+set key left top
+set title 'CPU Utilization'
+set xlabel 'Load (#Clients)'
+set ylabel 'CPU Utilization (#Cores)'
+
+set datafile separator ","
+
+plot data using 1:2:3 with lp title 'Control', \
+    '' using 1:4:5 with lp title 'Dependency Injection', \
+    '' using 1:6:7 with lp title 'OpenTelemetry', \
+    '' using 1:8:9 with lp title 'SpecialAgent', \

@@ -1,0 +1,18 @@
+set style data histogram
+set style histogram cluster gap 1 errorbars
+set style fill solid border rgb "black"
+
+set key left top
+set term pdfcairo size 4in,3in
+set output 'memory_bars.pdf'
+set title 'Memory Allocation'
+set ylabel 'Container Memory Allocation (MiB)'
+set auto x
+set yrange [0:*]
+
+set datafile separator ","
+
+plot 'data.csv' using ($3/1e6):($4/1e6):xtic(1) title 'Control', \
+    '' using ($6/1e6):($7/1e6):xtic(1) title 'Dependency Injection', \
+    '' using ($9/1e6):($10/1e6):xtic(1) title 'OpenTelemetry', \
+    '' using ($12/1e6):($13/1e6):xtic(1) title 'SpecialAgent', \

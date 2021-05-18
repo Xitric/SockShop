@@ -1,63 +1,74 @@
 import os
-import re
 import json
 import math
+import subprocess
+from . import indexer
 
-def run(path):
-    cpu_out = os.path.join(path, 'cpu.csv')
-    mem_out = os.path.join(path, 'mem.csv')
-    net_out = os.path.join(path, 'net.csv')
+data_types = ["cpu", "memory", "network"]
+temp_output = os.path.join(os.path.dirname(__file__), 'gnuplot/data.csv')
 
-    for test in os.listdir(path):
-        cpu_in = os.path.join(path, test, f'{test}_carts_cpu.json')
-        __analyze_data(cpu_in, cpu_out, test)
 
-        mem_in = os.path.join(path, test, f'{test}_carts_memory.json')
-        __analyze_data(mem_in, mem_out, test)
+def run(in_path: str, out_path: str):
+    index = indexer.index(in_path)
 
-        net_in = os.path.join(path, test, f'{test}_carts_network.json')
-        __analyze_data(net_in, net_out, test)
+    for data_type in data_types:
+        __analyze_data(index, in_path, out_path, data_type)
 
-def __get_client_count(test_name):
-    result = re.search(r'\D(\d+)$', test_name)
-    return int(result.group(1))
 
-def __get_technique(test_name):
-    result = re.search(r'(sa|otel|di|control)', test_name)
-    return result.group(1)
+def __analyze_data(index: indexer.Index, in_path: str, out_path: str, data_type: str):
+    for workload in index:
+        for clients in sorted(index[workload], key=lambda key: int(key)):
+            # clients,control_avg,control_err,di_avg,di_err,...
+            result_entry = f'{clients},'
 
-def __get_workload(test_name):
-    result = re.search(r'(sa|otel|di|control)([\D\_]+)\d', test_name)
-    return result.group(2)
+            for technique in index[workload][clients]:
+                test_name = f'{technique}{workload}{clients}'
+                data_file = os.path.join(in_path, test_name, f'{test_name}_carts_{data_type}.json')
+                avg = __compute_avg(data_file)
+                stdev = __compute_stdev(data_file, avg)
+                result_entry += f'{avg},{stdev},'
 
-def __analyze_data(input_path, output_path, test_name):
-    with open(input_path, 'r') as file:
+            with open(temp_output, 'a') as file:
+                file.write(f'{result_entry[:-1]}\n')
+
+        gnuplot_script_location = os.path.join(os.path.dirname(__file__), f'gnuplot/{data_type}_usage.plg')
+        subprocess.call(
+            f'gnuplot -e "data=\'{temp_output}\'; result=\'{workload}_{data_type}.pdf\'" {gnuplot_script_location}',
+            cwd=out_path)
+        os.remove(temp_output)
+
+
+def __compute_avg(in_path: str) -> float:
+    with open(in_path, 'r') as file:
         data_json = json.load(file)
         metrics = data_json['data']['result'][0]['values']
 
-        # Min, max, avg
         min_v = None
         max_v = None
         sum_v = 0
         n = 0
         for metric in metrics:
             value = float(metric[1])
-            if min_v == None or min_v > value:
+            if min_v is None or min_v > value:
                 min_v = value
-            if max_v == None or max_v < value:
+            if max_v is None or max_v < value:
                 max_v = value
-            sum_v = sum_v + value
-            n = n + 1
-        
-        avg = sum_v / n
+            sum_v += value
+            n += 1
 
-        # Stdev
+        return sum_v / n
+
+
+def __compute_stdev(in_path: str, avg: float) -> float:
+    with open(in_path, 'r') as file:
+        data_json = json.load(file)
+        metrics = data_json['data']['result'][0]['values']
+
         stdev_sum = 0
+        n = 0
         for metric in metrics:
             value = float(metric[1])
-            stdev_sum = stdev_sum + (value - avg) ** 2
-        
-        stdev = math.sqrt(stdev_sum / (n - 1))
-    
-    with open(output_path, 'a') as file:
-        file.write(f'{__get_technique(test_name)},{__get_workload(test_name)},{__get_client_count(test_name)},{min_v},{max_v},{avg},{stdev}\n')
+            stdev_sum += (value - avg) ** 2
+            n += 1
+
+        return math.sqrt(stdev_sum / (n - 1))
