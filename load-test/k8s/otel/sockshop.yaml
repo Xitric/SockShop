@@ -774,7 +774,7 @@ spec:
           requests:
             cpu: 100m
           limits:
-            cpu: 150m # 1-2: 256, 3: 1000
+            cpu: 1000m # 1-2: 150, 3: 1000
             memory: 128Mi
         ports:
         - containerPort: 80
