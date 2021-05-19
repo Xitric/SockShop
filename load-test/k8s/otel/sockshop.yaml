@@ -399,7 +399,7 @@ spec:
           requests:
             cpu: 500m
           limits:
-            cpu: 2000m
+            cpu: 500m # 1: 500, 2-:2000
             memory: 500Mi
         envFrom:
         - configMapRef:
@@ -772,9 +772,9 @@ spec:
         imagePullPolicy: IfNotPresent
         resources:
           requests:
-            cpu: 500m
+            cpu: 100m
           limits:
-            cpu: 1000m
+            cpu: 150m # 1-2: 256, 3: 1000
             memory: 128Mi
         ports:
         - containerPort: 80
