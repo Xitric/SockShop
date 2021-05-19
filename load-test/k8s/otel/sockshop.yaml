@@ -68,7 +68,6 @@ metadata:
     name: carts-db
 spec:
   ports:
-    # the port that this service should serve on
   - port: 27017
     targetPort: 27017
   selector:
@@ -153,7 +152,6 @@ metadata:
     name: carts
 spec:
   ports:
-    # the port that this service should serve on
   - port: 80
     targetPort: 80
   selector:
@@ -203,7 +201,6 @@ metadata:
     name: catalogue-db
 spec:
   ports:
-    # the port that this service should serve on
   - port: 3306
     targetPort: 3306
   selector:
@@ -255,7 +252,6 @@ metadata:
     name: catalogue
 spec:
   ports:
-    # the port that this service should serve on
   - port: 80
     targetPort: 80
   selector:
@@ -277,7 +273,7 @@ spec:
     spec:
       containers:
       - name: front-end
-        image: weaveworksdemos/front-end:0.3.12
+        image: xitric/front-end:di-1.0.0
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -286,6 +282,11 @@ spec:
           limits:
             cpu: 2000m
             memory: 500Mi
+        env:
+          - name: COLLECTOR_HOST
+            value: otel-collector.istio-system
+          - name: SERVICE_NAME
+            value: front-end
         ports:
         - containerPort: 8079
         securityContext:
@@ -369,7 +370,6 @@ metadata:
     name: orders-db
 spec:
   ports:
-    # the port that this service should serve on
   - port: 27017
     targetPort: 27017
   selector:
@@ -454,7 +454,6 @@ metadata:
     name: orders
 spec:
   ports:
-    # the port that this service should serve on
   - port: 80
     targetPort: 80
   selector:
@@ -506,7 +505,6 @@ metadata:
     name: payment
 spec:
   ports:
-    # the port that this service should serve on
   - port: 80
     targetPort: 80
   selector:
@@ -535,7 +533,7 @@ spec:
         resources:
           limits:
             cpu: 200m
-            memory: 768Mi
+            memory: 1024Mi
         ports:
         - containerPort: 80
       nodeSelector:
@@ -551,7 +549,6 @@ metadata:
     prometheus.io/path: "/prometheus"
 spec:
   ports:
-    # the port that this service should serve on
   - port: 80
     targetPort: 80
   selector:
@@ -604,7 +601,6 @@ metadata:
     name: rabbitmq
 spec:
   ports:
-    # the port that this service should serve on
   - port: 5672
     targetPort: 5672
   selector:
@@ -689,7 +685,6 @@ metadata:
     name: shipping
 spec:
   ports:
-    # the port that this service should serve on
   - port: 80
     targetPort: 80
   selector:
@@ -750,7 +745,6 @@ metadata:
     name: user-db
 spec:
   ports:
-    # the port that this service should serve on
   - port: 27017
     targetPort: 27017
   selector:
@@ -807,7 +801,6 @@ metadata:
     name: user
 spec:
   ports:
-    # the port that this service should serve on
   - port: 80
     targetPort: 80
   selector:

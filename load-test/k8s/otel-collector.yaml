@@ -73,6 +73,8 @@ spec:
     port: 8888
   - name: jaeger # Default endpoint for Jaeger
     port: 14250
+  - name: otlp-legacy # Legacy OTLP endpoint
+    port: 55681
   selector:
     component: otel-collector
 ---
@@ -121,6 +123,7 @@ spec:
         - containerPort: 8888
         - containerPort: 13133
         - containerPort: 14250
+        - containerPort: 55681
         volumeMounts:
         - name: otel-collector-config-vol
           mountPath: /etc/config
