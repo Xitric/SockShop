@@ -31,7 +31,7 @@ spec:
         - name: HUMIO_ENDPOINT
           value: https://cloud.humio.com/
         - name: HUMIO_REPOSITORY
-          value: sockshop
+          value: sockshop-traces
         livenessProbe:
           httpGet:
             path: /
