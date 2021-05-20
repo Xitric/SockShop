@@ -36,8 +36,8 @@ spec:
           requests:
             cpu: 200m
           limits:
-            cpu: 1500m
-            memory: 512Mi
+            cpu: 500m
+            memory: 128Mi
         ports:
         - name: mongo
           containerPort: 27017
@@ -95,9 +95,9 @@ spec:
         imagePullPolicy: IfNotPresent
         resources:
           requests:
-            cpu: 500m
+            cpu: 128m
           limits:
-            cpu: 2000m
+            cpu: 256m
             memory: 1024Mi
         envFrom:
         - configMapRef:
@@ -280,7 +280,7 @@ spec:
             cpu: 100m
             memory: 100Mi
           limits:
-            cpu: 2000m
+            cpu: 1000m
             memory: 500Mi
         env:
           - name: COLLECTOR_HOST
@@ -382,7 +382,7 @@ metadata:
   labels:
     name: orders
 spec:
-  replicas: 1
+  replicas: 12
   selector:
     matchLabels:
       name: orders
@@ -397,9 +397,9 @@ spec:
         imagePullPolicy: IfNotPresent
         resources:
           requests:
-            cpu: 500m
+            cpu: 100m
           limits:
-            cpu: 500m # 1: 500, 2-:2000
+            cpu: 200m
             memory: 500Mi
         envFrom:
         - configMapRef:
@@ -757,7 +757,7 @@ metadata:
   labels:
     name: user
 spec:
-  replicas: 1
+  replicas: 4
   selector:
     matchLabels:
       name: user
@@ -772,9 +772,9 @@ spec:
         imagePullPolicy: IfNotPresent
         resources:
           requests:
-            cpu: 100m
+            cpu: 64m
           limits:
-            cpu: 1000m # 1-2: 150, 3: 1000
+            cpu: 250m
             memory: 128Mi
         ports:
         - containerPort: 80
