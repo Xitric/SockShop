@@ -101,7 +101,7 @@ spec:
         component: otel-collector
     spec:
       containers:
-      - image: em135/collector-contrib:latest
+      - image: xitric/collector-contrib:latest
         name: otel-collector
         imagePullPolicy: IfNotPresent
         env:

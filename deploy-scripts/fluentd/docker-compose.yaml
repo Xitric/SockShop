@@ -2,12 +2,10 @@ version: "3.5"
 
 services:
     fluentd:
-        container_name: fluentd
         image: xitric/fluentd:latest
+        hostname: fluentd
         volumes:
-            - .:/fluentd/etc
+          - .:/fluentd/etc
         ports:
-            - "24224:24224"
-            - "24224:24224/udp"
-        command:
-            - --use-v1-config
+          - 24224:24224
+          - 24224:24224/udp
