@@ -5,7 +5,7 @@ metadata:
   labels:
     component: spring-conf
 data:
-  # Use this configuration for performance tests to ensure that only common featureas are enabled
+  # Use this configuration for performance tests to ensure that only common features are enabled
   # spring-config: |
   #   spring.sleuth.integration.enabled=false
   #   spring.sleuth.function.enabled=false
