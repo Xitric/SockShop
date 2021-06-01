@@ -1,4 +1,3 @@
-*.jar
 **/test_results*
 .idea
 test_results

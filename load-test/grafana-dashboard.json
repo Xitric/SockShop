@@ -16,7 +16,7 @@
     "gnetId": null,
     "graphTooltip": 0,
     "id": 23,
-    "iteration": 1619785138209,
+    "iteration": 1622532972788,
     "links": [],
     "panels": [
       {
@@ -95,7 +95,6 @@
         },
         "yaxes": [
           {
-            "$$hashKey": "object:308",
             "format": "short",
             "label": "cores",
             "logBase": 1,
@@ -104,7 +103,6 @@
             "show": true
           },
           {
-            "$$hashKey": "object:309",
             "format": "short",
             "label": null,
             "logBase": 1,
@@ -255,7 +253,7 @@
         "targets": [
           {
             "exemplar": false,
-            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[2m]))",
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[4m]))",
             "format": "time_series",
             "instant": false,
             "interval": "",
@@ -285,7 +283,6 @@
         },
         "yaxes": [
           {
-            "$$hashKey": "object:1301",
             "format": "cores",
             "label": "CPU utilization",
             "logBase": 1,
@@ -294,7 +291,6 @@
             "show": true
           },
           {
-            "$$hashKey": "object:1302",
             "format": "short",
             "label": null,
             "logBase": 1,
@@ -693,7 +689,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "sum(rate(container_memory_usage_bytes{container=\"${tsService}\"}[2m]))",
+            "expr": "avg(container_memory_usage_bytes{container=\"${tsService}\"})",
             "interval": "",
             "legendFormat": "",
             "refId": "A"
@@ -719,7 +715,6 @@
         },
         "yaxes": [
           {
-            "$$hashKey": "object:925",
             "format": "bytes",
             "label": "Memory usage",
             "logBase": 1,
@@ -728,7 +723,6 @@
             "show": true
           },
           {
-            "$$hashKey": "object:926",
             "format": "short",
             "label": null,
             "logBase": 1,
@@ -1052,7 +1046,6 @@
         },
         "yaxes": [
           {
-            "$$hashKey": "object:588",
             "format": "bytes",
             "label": "Bytes sent",
             "logBase": 1,
@@ -1061,7 +1054,6 @@
             "show": true
           },
           {
-            "$$hashKey": "object:589",
             "format": "short",
             "label": "# packets sent",
             "logBase": 1,
@@ -1216,13 +1208,13 @@
         },
         "id": 123,
         "panels": [],
-        "repeatIteration": 1619785138209,
+        "repeatIteration": 1622532972788,
         "repeatPanelId": 10,
         "scopedVars": {
           "tsService": {
             "selected": true,
-            "text": "orders",
-            "value": "orders"
+            "text": "carts-db",
+            "value": "carts-db"
           }
         },
         "title": "${tsService}",
@@ -1271,14 +1263,14 @@
         "pointradius": 2,
         "points": false,
         "renderer": "flot",
-        "repeatIteration": 1619785138209,
+        "repeatIteration": 1622532972788,
         "repeatPanelId": 2,
         "repeatedByRow": true,
         "scopedVars": {
           "tsService": {
             "selected": true,
-            "text": "orders",
-            "value": "orders"
+            "text": "carts-db",
+            "value": "carts-db"
           }
         },
         "seriesOverrides": [],
@@ -1288,7 +1280,7 @@
         "targets": [
           {
             "exemplar": false,
-            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[2m]))",
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[4m]))",
             "format": "time_series",
             "instant": false,
             "interval": "",
@@ -1318,7 +1310,6 @@
         },
         "yaxes": [
           {
-            "$$hashKey": "object:1301",
             "format": "cores",
             "label": "CPU utilization",
             "logBase": 1,
@@ -1327,7 +1318,6 @@
             "show": true
           },
           {
-            "$$hashKey": "object:1302",
             "format": "short",
             "label": null,
             "logBase": 1,
@@ -1387,14 +1377,14 @@
           "text": {}
         },
         "pluginVersion": "7.5.3",
-        "repeatIteration": 1619785138209,
+        "repeatIteration": 1622532972788,
         "repeatPanelId": 20,
         "repeatedByRow": true,
         "scopedVars": {
           "tsService": {
             "selected": true,
-            "text": "orders",
-            "value": "orders"
+            "text": "carts-db",
+            "value": "carts-db"
           }
         },
         "targets": [
@@ -1455,14 +1445,14 @@
           "text": {}
         },
         "pluginVersion": "7.5.3",
-        "repeatIteration": 1619785138209,
+        "repeatIteration": 1622532972788,
         "repeatPanelId": 28,
         "repeatedByRow": true,
         "scopedVars": {
           "tsService": {
             "selected": true,
-            "text": "orders",
-            "value": "orders"
+            "text": "carts-db",
+            "value": "carts-db"
           }
         },
         "targets": [
@@ -1525,14 +1515,14 @@
           "text": {}
         },
         "pluginVersion": "7.5.3",
-        "repeatIteration": 1619785138209,
+        "repeatIteration": 1622532972788,
         "repeatPanelId": 65,
         "repeatedByRow": true,
         "scopedVars": {
           "tsService": {
             "selected": true,
-            "text": "orders",
-            "value": "orders"
+            "text": "carts-db",
+            "value": "carts-db"
           }
         },
         "targets": [
@@ -1593,14 +1583,14 @@
           "text": {}
         },
         "pluginVersion": "7.5.3",
-        "repeatIteration": 1619785138209,
+        "repeatIteration": 1622532972788,
         "repeatPanelId": 67,
         "repeatedByRow": true,
         "scopedVars": {
           "tsService": {
             "selected": true,
-            "text": "orders",
-            "value": "orders"
+            "text": "carts-db",
+            "value": "carts-db"
           }
         },
         "targets": [
@@ -1661,14 +1651,14 @@
           "text": {}
         },
         "pluginVersion": "7.5.3",
-        "repeatIteration": 1619785138209,
+        "repeatIteration": 1622532972788,
         "repeatPanelId": 114,
         "repeatedByRow": true,
         "scopedVars": {
           "tsService": {
             "selected": true,
-            "text": "orders",
-            "value": "orders"
+            "text": "carts-db",
+            "value": "carts-db"
           }
         },
         "targets": [
@@ -1727,14 +1717,14 @@
         "pointradius": 2,
         "points": false,
         "renderer": "flot",
-        "repeatIteration": 1619785138209,
+        "repeatIteration": 1622532972788,
         "repeatPanelId": 8,
         "repeatedByRow": true,
         "scopedVars": {
           "tsService": {
             "selected": true,
-            "text": "orders",
-            "value": "orders"
+            "text": "carts-db",
+            "value": "carts-db"
           }
         },
         "seriesOverrides": [],
@@ -1744,7 +1734,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "sum(rate(container_memory_usage_bytes{container=\"${tsService}\"}[2m]))",
+            "expr": "avg(container_memory_usage_bytes{container=\"${tsService}\"})",
             "interval": "",
             "legendFormat": "",
             "refId": "A"
@@ -1770,7 +1760,6 @@
         },
         "yaxes": [
           {
-            "$$hashKey": "object:925",
             "format": "bytes",
             "label": "Memory usage",
             "logBase": 1,
@@ -1779,7 +1768,6 @@
             "show": true
           },
           {
-            "$$hashKey": "object:926",
             "format": "short",
             "label": null,
             "logBase": 1,
@@ -1839,14 +1827,14 @@
           "text": {}
         },
         "pluginVersion": "7.5.3",
-        "repeatIteration": 1619785138209,
+        "repeatIteration": 1622532972788,
         "repeatPanelId": 22,
         "repeatedByRow": true,
         "scopedVars": {
           "tsService": {
             "selected": true,
-            "text": "orders",
-            "value": "orders"
+            "text": "carts-db",
+            "value": "carts-db"
           }
         },
         "targets": [
@@ -1910,14 +1898,14 @@
           "text": {}
         },
         "pluginVersion": "7.5.3",
-        "repeatIteration": 1619785138209,
+        "repeatIteration": 1622532972788,
         "repeatPanelId": 116,
         "repeatedByRow": true,
         "scopedVars": {
           "tsService": {
             "selected": true,
-            "text": "orders",
-            "value": "orders"
+            "text": "carts-db",
+            "value": "carts-db"
           }
         },
         "targets": [
@@ -1978,14 +1966,14 @@
           "text": {}
         },
         "pluginVersion": "7.5.3",
-        "repeatIteration": 1619785138209,
+        "repeatIteration": 1622532972788,
         "repeatPanelId": 122,
         "repeatedByRow": true,
         "scopedVars": {
           "tsService": {
             "selected": true,
-            "text": "orders",
-            "value": "orders"
+            "text": "carts-db",
+            "value": "carts-db"
           }
         },
         "targets": [
@@ -2041,7 +2029,2133 @@
         "pointradius": 2,
         "points": false,
         "renderer": "flot",
-        "repeatIteration": 1619785138209,
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 18,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "carts-db",
+            "value": "carts-db"
+          }
+        },
+        "seriesOverrides": [
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"ts-avatar-service.*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"ts-assurance-service.*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"().*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"ts-admin-route-service.*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "Transmitted packets",
+            "yaxis": 2
+          }
+        ],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "Transmitted bytes",
+            "refId": "Transmitted bytes"
+          },
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_packets_total{pod=~\"${tsService}.*\"}[2m]))",
+            "format": "time_series",
+            "hide": false,
+            "interval": "",
+            "intervalFactor": 1,
+            "legendFormat": "Transmitted packets",
+            "refId": "Transmitted packets"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Container network traffic",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "bytes",
+            "label": "Bytes sent",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": "# packets sent",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 4,
+          "x": 12,
+          "y": 52
+        },
+        "id": 135,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 118,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "carts-db",
+            "value": "carts-db"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Average Bytes sent",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 55
+        },
+        "id": 136,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "min"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 120,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "carts-db",
+            "value": "carts-db"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Min Bytes Sent",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "collapsed": false,
+        "datasource": null,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 60
+        },
+        "id": 137,
+        "panels": [],
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 10,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "front-end",
+            "value": "front-end"
+          }
+        },
+        "title": "${tsService}",
+        "type": "row"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 61
+        },
+        "hiddenSeries": false,
+        "id": 138,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "7.5.3",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 2,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "front-end",
+            "value": "front-end"
+          }
+        },
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "exemplar": false,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[4m]))",
+            "format": "time_series",
+            "instant": false,
+            "interval": "",
+            "intervalFactor": 1,
+            "legendFormat": "",
+            "refId": "CPU usage"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Container CPU Load",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "transformations": [],
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "cores",
+            "label": "CPU utilization",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "continuous-GrYlRd"
+            },
+            "mappings": [],
+            "max": 2,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 2
+                }
+              ]
+            },
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 4,
+          "x": 12,
+          "y": 61
+        },
+        "id": 139,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 20,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "front-end",
+            "value": "front-end"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "Average CPU Utilization",
+            "refId": "CPU utilization"
+          }
+        ],
+        "title": "Average Container CPU Utilization",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "percentunit"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 4,
+          "x": 16,
+          "y": 61
+        },
+        "id": 140,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 28,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "front-end",
+            "value": "front-end"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[1m]))/sum(container_spec_cpu_quota{container=\"${tsService}\"}/container_spec_cpu_period{container=\"${tsService}\"})",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "timeFrom": null,
+        "timeShift": null,
+        "title": "Average Container CPU Utilization",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 61
+        },
+        "id": 141,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "max"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 65,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "front-end",
+            "value": "front-end"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Max CPU",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 65
+        },
+        "id": 142,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "min"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 67,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "front-end",
+            "value": "front-end"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Min CPU",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 69
+        },
+        "id": 143,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "max"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 114,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "front-end",
+            "value": "front-end"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_memory_usage_bytes{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Max Memory",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 70
+        },
+        "hiddenSeries": false,
+        "id": 144,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "7.5.3",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 8,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "front-end",
+            "value": "front-end"
+          }
+        },
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "avg(container_memory_usage_bytes{container=\"${tsService}\"})",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Container Memory Usage",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "bytes",
+            "label": "Memory usage",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "continuous-GrYlRd"
+            },
+            "mappings": [],
+            "max": 1073741824,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 1073741824
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 4,
+          "x": 12,
+          "y": 70
+        },
+        "id": 145,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 22,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "front-end",
+            "value": "front-end"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_memory_usage_bytes{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "timeFrom": null,
+        "timeShift": null,
+        "title": "Average Memory Consumption",
+        "transformations": [],
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 73
+        },
+        "id": 146,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "min"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 116,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "front-end",
+            "value": "front-end"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_memory_usage_bytes{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Min Memory",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 77
+        },
+        "id": 147,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "max"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 122,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "front-end",
+            "value": "front-end"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Max Bytes Sent",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 78
+        },
+        "hiddenSeries": false,
+        "id": 148,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "7.5.3",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 18,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "front-end",
+            "value": "front-end"
+          }
+        },
+        "seriesOverrides": [
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"ts-avatar-service.*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"ts-assurance-service.*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"().*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"ts-admin-route-service.*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "Transmitted packets",
+            "yaxis": 2
+          }
+        ],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "Transmitted bytes",
+            "refId": "Transmitted bytes"
+          },
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_packets_total{pod=~\"${tsService}.*\"}[2m]))",
+            "format": "time_series",
+            "hide": false,
+            "interval": "",
+            "intervalFactor": 1,
+            "legendFormat": "Transmitted packets",
+            "refId": "Transmitted packets"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Container network traffic",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "bytes",
+            "label": "Bytes sent",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": "# packets sent",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 4,
+          "x": 12,
+          "y": 78
+        },
+        "id": 149,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 118,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "front-end",
+            "value": "front-end"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Average Bytes sent",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 81
+        },
+        "id": 150,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "min"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 120,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "front-end",
+            "value": "front-end"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Min Bytes Sent",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "collapsed": false,
+        "datasource": null,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 86
+        },
+        "id": 151,
+        "panels": [],
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 10,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "orders",
+            "value": "orders"
+          }
+        },
+        "title": "${tsService}",
+        "type": "row"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 87
+        },
+        "hiddenSeries": false,
+        "id": 152,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "7.5.3",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 2,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "orders",
+            "value": "orders"
+          }
+        },
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "exemplar": false,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[4m]))",
+            "format": "time_series",
+            "instant": false,
+            "interval": "",
+            "intervalFactor": 1,
+            "legendFormat": "",
+            "refId": "CPU usage"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Container CPU Load",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "transformations": [],
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "cores",
+            "label": "CPU utilization",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "continuous-GrYlRd"
+            },
+            "mappings": [],
+            "max": 2,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 2
+                }
+              ]
+            },
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 4,
+          "x": 12,
+          "y": 87
+        },
+        "id": 153,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 20,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "orders",
+            "value": "orders"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "Average CPU Utilization",
+            "refId": "CPU utilization"
+          }
+        ],
+        "title": "Average Container CPU Utilization",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "percentunit"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 4,
+          "x": 16,
+          "y": 87
+        },
+        "id": 154,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 28,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "orders",
+            "value": "orders"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[1m]))/sum(container_spec_cpu_quota{container=\"${tsService}\"}/container_spec_cpu_period{container=\"${tsService}\"})",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "timeFrom": null,
+        "timeShift": null,
+        "title": "Average Container CPU Utilization",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 87
+        },
+        "id": 155,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "max"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 65,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "orders",
+            "value": "orders"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Max CPU",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 91
+        },
+        "id": 156,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "min"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 67,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "orders",
+            "value": "orders"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Min CPU",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 95
+        },
+        "id": 157,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "max"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 114,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "orders",
+            "value": "orders"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_memory_usage_bytes{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Max Memory",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 96
+        },
+        "hiddenSeries": false,
+        "id": 158,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "7.5.3",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 8,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "orders",
+            "value": "orders"
+          }
+        },
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "avg(container_memory_usage_bytes{container=\"${tsService}\"})",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Container Memory Usage",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "bytes",
+            "label": "Memory usage",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "continuous-GrYlRd"
+            },
+            "mappings": [],
+            "max": 1073741824,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 1073741824
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 4,
+          "x": 12,
+          "y": 96
+        },
+        "id": 159,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 22,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "orders",
+            "value": "orders"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_memory_usage_bytes{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "timeFrom": null,
+        "timeShift": null,
+        "title": "Average Memory Consumption",
+        "transformations": [],
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 99
+        },
+        "id": 160,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "min"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 116,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "orders",
+            "value": "orders"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_memory_usage_bytes{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Min Memory",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 103
+        },
+        "id": 161,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "max"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 122,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "orders",
+            "value": "orders"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Max Bytes Sent",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 104
+        },
+        "hiddenSeries": false,
+        "id": 162,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "7.5.3",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "repeatIteration": 1622532972788,
         "repeatPanelId": 18,
         "repeatedByRow": true,
         "scopedVars": {
@@ -2115,7 +4229,6 @@
         },
         "yaxes": [
           {
-            "$$hashKey": "object:588",
             "format": "bytes",
             "label": "Bytes sent",
             "logBase": 1,
@@ -2124,7 +4237,6 @@
             "show": true
           },
           {
-            "$$hashKey": "object:589",
             "format": "short",
             "label": "# packets sent",
             "logBase": 1,
@@ -2167,9 +4279,9 @@
           "h": 8,
           "w": 4,
           "x": 12,
-          "y": 52
+          "y": 104
         },
-        "id": 135,
+        "id": 163,
         "options": {
           "reduceOptions": {
             "calcs": [
@@ -2183,7 +4295,7 @@
           "text": {}
         },
         "pluginVersion": "7.5.3",
-        "repeatIteration": 1619785138209,
+        "repeatIteration": 1622532972788,
         "repeatPanelId": 118,
         "repeatedByRow": true,
         "scopedVars": {
@@ -2235,9 +4347,9 @@
           "h": 4,
           "w": 3,
           "x": 20,
-          "y": 55
+          "y": 107
         },
-        "id": 136,
+        "id": 164,
         "options": {
           "reduceOptions": {
             "calcs": [
@@ -2251,7 +4363,7 @@
           "text": {}
         },
         "pluginVersion": "7.5.3",
-        "repeatIteration": 1619785138209,
+        "repeatIteration": 1622532972788,
         "repeatPanelId": 120,
         "repeatedByRow": true,
         "scopedVars": {
@@ -2273,8 +4385,2135 @@
         "title": "Min Bytes Sent",
         "transparent": true,
         "type": "gauge"
+      },
+      {
+        "collapsed": false,
+        "datasource": null,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 112
+        },
+        "id": 165,
+        "panels": [],
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 10,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "shipping",
+            "value": "shipping"
+          }
+        },
+        "title": "${tsService}",
+        "type": "row"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 113
+        },
+        "hiddenSeries": false,
+        "id": 166,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "7.5.3",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 2,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "shipping",
+            "value": "shipping"
+          }
+        },
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "exemplar": false,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[4m]))",
+            "format": "time_series",
+            "instant": false,
+            "interval": "",
+            "intervalFactor": 1,
+            "legendFormat": "",
+            "refId": "CPU usage"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Container CPU Load",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "transformations": [],
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "cores",
+            "label": "CPU utilization",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "continuous-GrYlRd"
+            },
+            "mappings": [],
+            "max": 2,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 2
+                }
+              ]
+            },
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 4,
+          "x": 12,
+          "y": 113
+        },
+        "id": 167,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 20,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "shipping",
+            "value": "shipping"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "Average CPU Utilization",
+            "refId": "CPU utilization"
+          }
+        ],
+        "title": "Average Container CPU Utilization",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "percentunit"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 4,
+          "x": 16,
+          "y": 113
+        },
+        "id": 168,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 28,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "shipping",
+            "value": "shipping"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[1m]))/sum(container_spec_cpu_quota{container=\"${tsService}\"}/container_spec_cpu_period{container=\"${tsService}\"})",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "timeFrom": null,
+        "timeShift": null,
+        "title": "Average Container CPU Utilization",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 113
+        },
+        "id": 169,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "max"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 65,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "shipping",
+            "value": "shipping"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Max CPU",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 117
+        },
+        "id": 170,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "min"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 67,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "shipping",
+            "value": "shipping"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Min CPU",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 121
+        },
+        "id": 171,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "max"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 114,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "shipping",
+            "value": "shipping"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_memory_usage_bytes{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Max Memory",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 122
+        },
+        "hiddenSeries": false,
+        "id": 172,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "7.5.3",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 8,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "shipping",
+            "value": "shipping"
+          }
+        },
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "avg(container_memory_usage_bytes{container=\"${tsService}\"})",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Container Memory Usage",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "bytes",
+            "label": "Memory usage",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "continuous-GrYlRd"
+            },
+            "mappings": [],
+            "max": 1073741824,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 1073741824
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 4,
+          "x": 12,
+          "y": 122
+        },
+        "id": 173,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 22,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "shipping",
+            "value": "shipping"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_memory_usage_bytes{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "timeFrom": null,
+        "timeShift": null,
+        "title": "Average Memory Consumption",
+        "transformations": [],
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 125
+        },
+        "id": 174,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "min"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 116,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "shipping",
+            "value": "shipping"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_memory_usage_bytes{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Min Memory",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 129
+        },
+        "id": 175,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "max"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 122,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "shipping",
+            "value": "shipping"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Max Bytes Sent",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 130
+        },
+        "hiddenSeries": false,
+        "id": 176,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "7.5.3",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 18,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "shipping",
+            "value": "shipping"
+          }
+        },
+        "seriesOverrides": [
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"ts-avatar-service.*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"ts-assurance-service.*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"().*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"ts-admin-route-service.*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "Transmitted packets",
+            "yaxis": 2
+          }
+        ],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "Transmitted bytes",
+            "refId": "Transmitted bytes"
+          },
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_packets_total{pod=~\"${tsService}.*\"}[2m]))",
+            "format": "time_series",
+            "hide": false,
+            "interval": "",
+            "intervalFactor": 1,
+            "legendFormat": "Transmitted packets",
+            "refId": "Transmitted packets"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Container network traffic",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "bytes",
+            "label": "Bytes sent",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": "# packets sent",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 4,
+          "x": 12,
+          "y": 130
+        },
+        "id": 177,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 118,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "shipping",
+            "value": "shipping"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Average Bytes sent",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 133
+        },
+        "id": 178,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "min"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 120,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "shipping",
+            "value": "shipping"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Min Bytes Sent",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "collapsed": false,
+        "datasource": null,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 138
+        },
+        "id": 179,
+        "panels": [],
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 10,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "user",
+            "value": "user"
+          }
+        },
+        "title": "${tsService}",
+        "type": "row"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 139
+        },
+        "hiddenSeries": false,
+        "id": 180,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "7.5.3",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 2,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "user",
+            "value": "user"
+          }
+        },
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "exemplar": false,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[4m]))",
+            "format": "time_series",
+            "instant": false,
+            "interval": "",
+            "intervalFactor": 1,
+            "legendFormat": "",
+            "refId": "CPU usage"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Container CPU Load",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "transformations": [],
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "cores",
+            "label": "CPU utilization",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "continuous-GrYlRd"
+            },
+            "mappings": [],
+            "max": 2,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 2
+                }
+              ]
+            },
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 4,
+          "x": 12,
+          "y": 139
+        },
+        "id": 181,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 20,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "user",
+            "value": "user"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "Average CPU Utilization",
+            "refId": "CPU utilization"
+          }
+        ],
+        "title": "Average Container CPU Utilization",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "percentunit"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 9,
+          "w": 4,
+          "x": 16,
+          "y": 139
+        },
+        "id": 182,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 28,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "user",
+            "value": "user"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[1m]))/sum(container_spec_cpu_quota{container=\"${tsService}\"}/container_spec_cpu_period{container=\"${tsService}\"})",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "timeFrom": null,
+        "timeShift": null,
+        "title": "Average Container CPU Utilization",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 139
+        },
+        "id": 183,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "max"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 65,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "user",
+            "value": "user"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Max CPU",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "cores"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 143
+        },
+        "id": 184,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "min"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 67,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "user",
+            "value": "user"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_cpu_usage_seconds_total{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Min CPU",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 147
+        },
+        "id": 185,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "max"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 114,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "user",
+            "value": "user"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_memory_usage_bytes{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Max Memory",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 148
+        },
+        "hiddenSeries": false,
+        "id": 186,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "7.5.3",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 8,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "user",
+            "value": "user"
+          }
+        },
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "avg(container_memory_usage_bytes{container=\"${tsService}\"})",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Container Memory Usage",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "bytes",
+            "label": "Memory usage",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "continuous-GrYlRd"
+            },
+            "mappings": [],
+            "max": 1073741824,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 1073741824
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 4,
+          "x": 12,
+          "y": 148
+        },
+        "id": 187,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 22,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "user",
+            "value": "user"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_memory_usage_bytes{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "timeFrom": null,
+        "timeShift": null,
+        "title": "Average Memory Consumption",
+        "transformations": [],
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 151
+        },
+        "id": 188,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "min"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 116,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "user",
+            "value": "user"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_memory_usage_bytes{container=\"${tsService}\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Min Memory",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 155
+        },
+        "id": 189,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "max"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 122,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "user",
+            "value": "user"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Max Bytes Sent",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 156
+        },
+        "hiddenSeries": false,
+        "id": 190,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "7.5.3",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 18,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "user",
+            "value": "user"
+          }
+        },
+        "seriesOverrides": [
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"ts-avatar-service.*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"ts-assurance-service.*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"().*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "sum(rate(container_network_transmit_packets_total{pod=~\"ts-admin-route-service.*\"}[2m]))",
+            "yaxis": 2
+          },
+          {
+            "alias": "Transmitted packets",
+            "yaxis": 2
+          }
+        ],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "Transmitted bytes",
+            "refId": "Transmitted bytes"
+          },
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_packets_total{pod=~\"${tsService}.*\"}[2m]))",
+            "format": "time_series",
+            "hide": false,
+            "interval": "",
+            "intervalFactor": 1,
+            "legendFormat": "Transmitted packets",
+            "refId": "Transmitted packets"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Container network traffic",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "format": "bytes",
+            "label": "Bytes sent",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "format": "short",
+            "label": "# packets sent",
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 4,
+          "x": 12,
+          "y": 156
+        },
+        "id": 191,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "mean"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 118,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "user",
+            "value": "user"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Average Bytes sent",
+        "transparent": true,
+        "type": "gauge"
+      },
+      {
+        "datasource": null,
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "bytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 3,
+          "x": 20,
+          "y": 159
+        },
+        "id": 192,
+        "options": {
+          "reduceOptions": {
+            "calcs": [
+              "min"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "text": {}
+        },
+        "pluginVersion": "7.5.3",
+        "repeatIteration": 1622532972788,
+        "repeatPanelId": 120,
+        "repeatedByRow": true,
+        "scopedVars": {
+          "tsService": {
+            "selected": true,
+            "text": "user",
+            "value": "user"
+          }
+        },
+        "targets": [
+          {
+            "exemplar": true,
+            "expr": "sum(rate(container_network_transmit_bytes_total{pod=~\"${tsService}.*\"}[2m]))",
+            "interval": "",
+            "legendFormat": "",
+            "refId": "A"
+          }
+        ],
+        "title": "Min Bytes Sent",
+        "transparent": true,
+        "type": "gauge"
       }
     ],
+    "refresh": false,
     "schemaVersion": 27,
     "style": "dark",
     "tags": [],
@@ -2315,7 +6554,7 @@
               "value": "carts"
             },
             {
-              "selected": false,
+              "selected": true,
               "text": "carts-db",
               "value": "carts-db"
             },
@@ -2350,7 +6589,7 @@
               "value": "etcd"
             },
             {
-              "selected": false,
+              "selected": true,
               "text": "front-end",
               "value": "front-end"
             },
@@ -2450,7 +6689,7 @@
               "value": "rabbitmq"
             },
             {
-              "selected": false,
+              "selected": true,
               "text": "shipping",
               "value": "shipping"
             },
@@ -2460,7 +6699,7 @@
               "value": "ts-voucher-mysql"
             },
             {
-              "selected": false,
+              "selected": true,
               "text": "user",
               "value": "user"
             },
@@ -2850,12 +7089,13 @@
       ]
     },
     "time": {
-      "from": "now-30m",
+      "from": "now-15m",
       "to": "now"
     },
     "timepicker": {},
     "timezone": "",
     "title": "Performance Test",
     "uid": "Slg5P29Gz",
-    "version": 27
+    "version": 31
   }
+  
