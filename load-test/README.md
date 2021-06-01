@@ -61,7 +61,7 @@ The test is then executed by simply running the file `runner.py`. This file assu
 ### View Cart
 The file `cart_client.py` contains a sythetic and light-weight workload that simulates a user continuously opening their cart. This causes two services to be invoked in SockShop.
 
-## Checkout
+### Checkout
 The file `checkout_client.py` contains a  synthetic and heavy-weight workload that simulates a user continuously posting orders against the SockShop application. This causes six services to be invoked, with many remote procedure calls taking place.
 
 ### Realistic Workload
